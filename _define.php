@@ -14,7 +14,7 @@ $this->registerModule(
     'Files alias',
     "Manage aliases of your blog's media",
     'Osku and contributors',
-    '0.7-dev',
+    '0.7',
     [
         'requires'    => [['core', '2.24']],
         'permissions' => dcCore::app()->auth->makePermissions([
