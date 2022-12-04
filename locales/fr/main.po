@@ -1,101 +1,72 @@
-# Language: Français
-# Module: filesAlias - 0.6beta
-# Date: 2015-06-16 17:26:03
-# Translated with translater 2015.03.02
-
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
-"Project-Id-Version: filesAlias 0.6beta\n"
+"Project-Id-Version: filesAlias 0.7-dev\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2015-06-16T17:26:03+00:00\n"
-"Last-Translator: brol\n"
+"PO-Revision-Date: 2022-12-04T18:18:09+00:00\n"
+"Last-Translator: Jean-Christian Denis\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: _admin.php:15
-#: _admin.php:24
-#: index.php:15
-#: index.php:91
-msgid "Medias sharing"
-msgstr "Partage de médias"
+msgid "Media sharing"
+msgstr "Partage de media"
 
-#: inc/class.files.alias.php:78
 msgid "File URL is empty."
 msgstr "L'URL du fichier est vide."
 
-#: inc/class.files.alias.php:82
 msgid "File destination is empty."
 msgstr "La destination du fichier est vide."
 
-#: index.php:57
-#: index.php:75
-msgid "Target is not in medias manager."
-msgstr "La cible n'est pas dans le gestionnaire de médias."
-
-#: index.php:98
 msgid "Aliases successfully updated."
 msgstr "Les alias ont été mis à jour avec succès."
 
-#: index.php:102
 msgid "Alias for this media created."
 msgstr "L'alias pour votre fichier a été créé."
 
-#: index.php:111
-msgid "No alias"
-msgstr "Aucun alias"
+msgid "Target is not in media manager."
+msgstr "La cible n'est pas dans le gestionnaire de media."
 
-#: index.php:120
-msgid "Aliases list"
-msgstr "Liste des alias"
+msgid "Alias for this media modified."
+msgstr "L'alias du media modifié."
 
-#: index.php:122
-msgid "Destination"
-msgstr "Destination"
-
-#: index.php:123
-msgid "Alias"
-msgstr "Alias"
-
-#: index.php:124
-#: index.php:166
-msgid "Disposable"
-msgstr "Jetable"
-
-#: index.php:132
-#: index.php:137
-msgid "link"
-msgstr "lien"
-
-#: index.php:144
-msgid "To remove a link, empty its alias or destination."
-msgstr "Pour supprimer un lien, vider son alias ou sa destination."
-
-#: index.php:154
 msgid "New alias"
 msgstr "Nouvel alias"
 
-#: index.php:157
 msgid "Destination:"
 msgstr "Destination :"
 
-#: index.php:159
 msgid "Destination file must be in media manager."
 msgstr "Le fichier de destination doit se trouver dans la médiathèque."
 
-#: index.php:160
-msgid "Root URL \"<code>%s</code>\" will be automatically removed."
-msgstr "La racine URL '<code>%s</code>' sera automatiquement supprimée."
-
-#: index.php:162
 msgid "URL (alias):"
 msgstr "URL (alias) :"
 
-#: index.php:164
 msgid "Leave empty to get a randomize alias."
 msgstr "Laisser vide pour obtenir un alias aléatoire."
 
-msgid "Manage aliases of your blog's medias"
-msgstr "Gérer les alias des médias de votre blog"
+msgid "Disposable"
+msgstr "Jetable"
+
+msgid "Do not put blog media URL \"%s\" in fields or it will be removed."
+msgstr "Ne pas mettre l'URL des media \"%s\" dans les champs, ou il sera retiré."
+
+msgid "No alias"
+msgstr "Aucun alias"
+
+msgid "Aliases list"
+msgstr "Liste des alias"
+
+msgid "Destination"
+msgstr "Destination"
+
+msgid "link"
+msgstr "lien"
+
+msgid "To remove a link, empty its alias or destination."
+msgstr "Pour supprimer un lien, vider son alias ou sa destination."
+
+msgid "Manage aliases of your blog's media"
+msgstr "Gérer les alias des média de votre blog"
 

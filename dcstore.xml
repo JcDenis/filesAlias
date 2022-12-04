@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<modules xmlns:da="http://dotaddict.org/da/">
+  <module id="filesAlias">
+    <name>Files alias</name>
+    <version>0.7-dev</version>
+    <author>Osku and contributors</author>
+    <desc>Manage aliases of your blog's media</desc>
+    <file>https://github.com/JcDenis/filesAlias/releases/download/v0.7-dev/plugin-filesAlias.zip</file>
+    <da:dcmin>2.24</da:dcmin>
+    <da:details>https://plugins.dotaddict.org/dc2/details/filesAlias</da:details>
+    <da:support>https://github.com/JcDenis/filesAlias</da:support>
+  </module>
+</modules>

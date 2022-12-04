@@ -1,27 +1,29 @@
 <?php
-# -- BEGIN LICENSE BLOCK ----------------------------------
-#
-# This file is part of filesAlias, a plugin for Dotclear 2.
-# 
-# Copyright (c) 2009-2015 Osku & Pierre Van Glabeke
-#
-# Licensed under the GPL version 2.0 license.
-# A copy of this license is available in LICENSE file or at
-# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
-#
-# -- END LICENSE BLOCK ------------------------------------
-if (!defined('DC_RC_PATH')) { return; }
-
+/**
+ * @brief filesAlias, a plugin for Dotclear 2
+ *
+ * @package Dotclear
+ * @subpackage Plugin
+ *
+ * @author Osku and contributors
+ *
+ * @copyright Jean-Christian Denis
+ * @copyright GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
+ */
 $this->registerModule(
-	/* Name */				'filesAlias',
-	/* Description*/		"Manage aliases of your blog's medias",
-	/* Author */			"Osku & Pierre Van Glabeke",
-	/* Version */			'0.6',
-	array(
-		'permissions' => 'contentadmin',
-		'type' => 'plugin',
-		'dc_min' => '2.7',
-		'support' => 'http://forum.dotclear.org/viewtopic.php?id=42317',
-		'details' => 'http://plugins.dotaddict.org/dc2/details/filesAlias'
-		)
+    'Files alias',
+    "Manage aliases of your blog's media",
+    'Osku and contributors',
+    '0.7-dev',
+    [
+        'requires'    => [['core', '2.24']],
+        'permissions' => dcCore::app()->auth->makePermissions([
+            dcAuth::PERMISSION_CONTENT_ADMIN,
+        ]),
+        'type' => 'plugin',
+        //'support'   => 'http://forum.dotclear.org/viewtopic.php?id=42317',
+        'support'    => 'https://github.com/JcDenis/filesAlias',
+        'details'    => 'https://plugins.dotaddict.org/dc2/details/filesAlias',
+        'repository' => 'https://raw.githubusercontent.com/JcDenis/filesAlias/master/dcstore.xml',
+    ]
 );

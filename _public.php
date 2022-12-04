@@ -1,102 +1,89 @@
 <?php
-# -- BEGIN LICENSE BLOCK ----------------------------------
-#
-# This file is part of filesAlias, a plugin for Dotclear 2.
-# 
-# Copyright (c) 2009-2015 Osku & Pierre Van Glabeke
-#
-# Licensed under the GPL version 2.0 license.
-# A copy of this license is available in LICENSE file or at
-# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
-#
-# -- END LICENSE BLOCK ------------------------------------
+/**
+ * @brief filesAlias, a plugin for Dotclear 2
+ *
+ * @package Dotclear
+ * @subpackage Plugin
+ *
+ * @author Osku and contributors
+ *
+ * @copyright Jean-Christian Denis
+ * @copyright GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
+ */
+if (!defined('DC_RC_PATH')) {
+    return null;
+}
 
-if (!defined('DC_RC_PATH')) { return; }
-
-$core->tpl->setPath($core->tpl->getPath(), dirname(__FILE__).'/default-templates');
-$core->tpl->addValue('fileAliasURL',array('templateAlias','fileAliasURL'));
+dcCore::app()->tpl->setPath(dcCore::app()->tpl->getPath(), __DIR__ . '/default-templates');
+dcCore::app()->tpl->addValue('fileAliasURL', ['templateAlias','fileAliasURL']);
 
 class templateAlias
 {
-	public static function fileAliasURL($attr)
-	{
-		global $core, $_ctx;
-		 
-		$f = $GLOBALS['core']->tpl->getFilters($attr);
-		return '<?php echo '.sprintf($f,'$core->blog->url.$core->url->getBase("filesalias")."/".$_ctx->filealias->filesalias_url').'; ?>';
-	 }
+    public static function fileAliasURL($attr)
+    {
+        $f = dcCore::app()->tpl->getFilters($attr);
+
+        return '<?php echo ' . sprintf($f, 'dcCore::app()->blog->url.dcCore::app()->url->getBase("filesalias")."/".dcCore::app()->ctx->filealias->filesalias_url') . '; ?>';
+    }
 }
 
 class urlFilesAlias extends dcUrlHandlers
 {
-	public static function alias($args)
-	{
-		$_ctx =& $GLOBALS['_ctx'];
-		$core =& $GLOBALS['core'];
-		$delete = false;
-		
-		$_ctx->filealias = $core->filealias->getAlias($args);
+    public static function alias($args)
+    {
+        $delete = false;
 
-		if ($_ctx->filealias->isEmpty()) {
-			self::p404();
-		}
-		
-		if ($_ctx->filealias->filesalias_disposable) {
-			$delete = true;
-		}
-		
-		if ($_ctx->filealias->filesalias_password) {
-		
-			# Check for match
-			if (!empty($_POST['filepassword']) && $_POST['filepassword'] == $_ctx->filealias->filesalias_password)
-			{
-				self::servefile($_ctx->filealias->filesalias_destination,$args,$delete);
-			}
-			else
-			{
-				self::serveDocument('file-password-form.html','text/html',false);
-				return;
-			}
-		}
-		else
-		{
-			self::servefile($_ctx->filealias->filesalias_destination,$args,$delete);
-		}
-	}
-	
-	public static function servefile($target,$alias,$delete=false)
-	{
-		$core =& $GLOBALS['core'];	
-		
-		$a= new aliasMedia($core);
-		$media = $a->getMediaId($target);
+        dcCore::app()->ctx->filealias = dcCore::app()->filealias->getAlias($args);
 
-		if (empty($media))
-		{
-			self::p404();			
-		}
-		
-		$file = $core->media->getFile($media);
-	
-		if (empty($file->file))
-		  {
-		    self::p404();
-		  }
-	  
-		header('Content-type: '.$file->type);
-		header('Content-Length: '.$file->size);
-		header('Content-Disposition: attachment; filename="'.$file->basename.'"');
-		
-		if (ob_get_length() > 0) {
-			ob_end_clean(); 
-		}
-			flush();
-		
-		readfile($file->file);
-		if ($delete) {
-			$core->filealias->deleteAlias($alias);
-		}
+        if (dcCore::app()->ctx->filealias->isEmpty()) {
+            self::p404();
+        }
 
-		return;	
-	}
+        if (dcCore::app()->ctx->filealias->filesalias_disposable) {
+            $delete = true;
+        }
+
+        if (dcCore::app()->ctx->filealias->filesalias_password) {
+            # Check for match
+            if (!empty($_POST['filepassword']) && $_POST['filepassword'] == dcCore::app()->ctx->filealias->filesalias_password) {
+                self::servefile(dcCore::app()->ctx->filealias->filesalias_destination, $args, $delete);
+            } else {
+                self::serveDocument('file-password-form.html', 'text/html', false);
+
+                return;
+            }
+        } else {
+            self::servefile(dcCore::app()->ctx->filealias->filesalias_destination, $args, $delete);
+        }
+    }
+
+    public static function servefile($target, $alias, $delete = false)
+    {
+        $a     = new aliasMedia();
+        $media = $a->getMediaId($target);
+
+        if (empty($media)) {
+            self::p404();
+        }
+
+        $file = dcCore::app()->media->getFile($media);
+
+        if (empty($file->file)) {
+            self::p404();
+        }
+
+        header('Content-type: ' . $file->type);
+        header('Content-Length: ' . $file->size);
+        header('Content-Disposition: attachment; filename="' . $file->basename . '"');
+
+        if (ob_get_length() > 0) {
+            ob_end_clean();
+        }
+        flush();
+
+        readfile($file->file);
+        if ($delete) {
+            dcCore::app()->filealias->deleteAlias($alias);
+        }
+    }
 }
