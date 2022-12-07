@@ -15,12 +15,12 @@ if (!defined('DC_CONTEXT_ADMIN')) {
 }
 
 try {
-    # Grab info
-    $mod_id  = basename(__DIR__);
-    $version = dcCore::app()->plugins->moduleInfo($mod_id, 'version');
-
-    if (version_compare(dcCore::app()->getVersion($mod_id), $version, '>=')) {
-        return;
+    if (version_compare(
+        dcCore::app()->getVersion(basename(__DIR__)),
+        dcCore::app()->plugins->moduleInfo(basename(__DIR__), 'version'),
+        '>='
+    )) {
+        return null;
     }
 
     $s = new dbStruct(dcCore::app()->con, dcCore::app()->prefix);
@@ -41,8 +41,6 @@ try {
 
     $si      = new dbStruct(dcCore::app()->con, dcCore::app()->prefix);
     $changes = $si->synchronize($s);
-
-    dcCore::app()->setVersion($mod_id, $version);
 
     return true;
 } catch (Exception $e) {
