@@ -15,10 +15,9 @@ if (!defined('DC_CONTEXT_ADMIN')) {
 }
 
 try {
-    if (version_compare(
-        dcCore::app()->getVersion(basename(__DIR__)),
-        dcCore::app()->plugins->moduleInfo(basename(__DIR__), 'version'),
-        '>='
+    if (!dcCore::app()->newVersion(
+        basename(__DIR__), 
+        dcCore::app()->plugins->moduleInfo(basename(__DIR__), 'version')
     )) {
         return null;
     }
@@ -33,9 +32,7 @@ try {
         ->filesalias_disposable('smallint', 0, false, 0)
 
         ->primary('pk_filesalias', 'blog_id', 'filesalias_url')
-
         ->index('idx_filesalias_blog_id', 'btree', 'blog_id')
-
         ->reference('fk_filesalias_blog', 'blog_id', 'blog', 'blog_id', 'cascade', 'cascade')
     ;
 
