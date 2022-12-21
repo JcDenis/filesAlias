@@ -14,16 +14,16 @@ $this->registerModule(
     'Files alias',
     "Manage aliases of your blog's media",
     'Osku and contributors',
-    '0.7',
+    '0.7.1',
     [
         'requires'    => [['core', '2.24']],
         'permissions' => dcCore::app()->auth->makePermissions([
             dcAuth::PERMISSION_CONTENT_ADMIN,
         ]),
-        'type' => 'plugin',
+        'type'        => 'plugin',
         //'support'   => 'http://forum.dotclear.org/viewtopic.php?id=42317',
-        'support'    => 'https://github.com/JcDenis/filesAlias',
-        'details'    => 'https://plugins.dotaddict.org/dc2/details/filesAlias',
-        'repository' => 'https://raw.githubusercontent.com/JcDenis/filesAlias/master/dcstore.xml',
+        'support'     => 'https://github.com/JcDenis/' . basename(__DIR__),
+        'details'     => 'https://plugins.dotaddict.org/dc2/details/' . basename(__DIR__),
+        'repository'  => 'https://raw.githubusercontent.com/JcDenis/' . basename(__DIR__) . '/master/dcstore.xml',
     ]
 );
