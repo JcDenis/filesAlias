@@ -16,18 +16,18 @@ if (!defined('DC_CONTEXT_ADMIN')) {
 
 dcCore::app()->menu[dcAdmin::MENU_BLOG]->addItem(
     __('Media sharing'),
-    dcCore::app()->adminurl->get('admin.plugin.filesAlias'),
-    urldecode(dcPage::getPF('filesAlias/icon.svg')),
-    preg_match('/' . preg_quote(dcCore::app()->adminurl->get('admin.plugin.filesAlias')) . '(&.*)?$/', $_SERVER['REQUEST_URI']),
+    dcCore::app()->adminurl->get('admin.plugin.' . basename(__DIR__)),
+    urldecode(dcPage::getPF(basename(__DIR__) . '/icon.svg')),
+    preg_match('/' . preg_quote(dcCore::app()->adminurl->get('admin.plugin.' . basename(__DIR__))) . '(&.*)?$/', $_SERVER['REQUEST_URI']),
     dcCore::app()->auth->check(dcCore::app()->auth->makePermissions([dcAuth::PERMISSION_CONTENT_ADMIN]), dcCore::app()->blog->id)
 );
 
 dcCore::app()->addBehavior('adminDashboardFavoritesV2', function (dcFavorites $favs) {
     $favs->register('filesAlias', [
         'title'       => __('Media sharing'),
-        'url'         => dcCore::app()->adminurl->get('admin.plugin.filesAlias'),
-        'small-icon'  => dcPage::getPF('filesAlias/icon.svg'),
-        'large-icon'  => dcPage::getPF('filesAlias/icon.svg'),
+        'url'         => dcCore::app()->adminurl->get('admin.plugin.' . basename(__DIR__)),
+        'small-icon'  => dcPage::getPF(basename(__DIR__) . '/icon.svg'),
+        'large-icon'  => dcPage::getPF(basename(__DIR__) . '/icon.svg'),
         'permissions' => dcCore::app()->auth->makePermissions([
             dcAuth::PERMISSION_USAGE,
             dcAuth::PERMISSION_CONTENT_ADMIN,

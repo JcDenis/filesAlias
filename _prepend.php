@@ -20,7 +20,7 @@ Clearbricks::lib()->autoload([
     'PallazzoTools' => __DIR__ . '/inc/lib.files.alias.tools.php',
 ]);
 
-dcCore::app()->filealias = new filesAliases();
+dcCore::app()->__set('filealias', new filesAliases());
 
 dcCore::app()->url->register(
     'filesalias',

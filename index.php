@@ -14,7 +14,7 @@ if (!defined('DC_CONTEXT_ADMIN')) {
     return null;
 }
 
-$o       = dcCore::app()->filealias;
+$o       = dcCore::app()->__get('filealias');
 $aliases = $o->getAliases();
 $media   = new dcMedia();
 $a       = new aliasMedia();
@@ -25,7 +25,7 @@ if (isset($_POST['a']) && is_array($_POST['a'])) {
     try {
         $o->updateAliases($_POST['a']);
         dcAdminNotices::addSuccessNotice(__('Aliases successfully updated.'));
-        dcCore::app()->adminurl->redirect('admin.plugin.filesAlias');
+        dcCore::app()->adminurl->redirect('admin.plugin.' . basename(__DIR__));
     } catch (Exception $e) {
         dcCore::app()->error->add($e->getMessage());
     }
@@ -47,7 +47,7 @@ if (isset($_POST['filesalias_url'])) {
             try {
                 $o->createAlias($url, $target, $totrash, $password);
                 dcAdminNotices::addSuccessNotice(__('Alias for this media created.'));
-                dcCore::app()->adminurl->redirect('admin.plugin.filesAlias');
+                dcCore::app()->adminurl->redirect('admin.plugin.' . basename(__DIR__));
             } catch (Exception $e) {
                 dcCore::app()->error->add($e->getMessage());
             }
@@ -61,7 +61,7 @@ if (isset($_POST['filesalias_url'])) {
             try {
                 $o->createAlias($url, $target, $totrash, $password);
                 dcAdminNotices::addSuccessNotice(__('Alias for this media modified.'));
-                dcCore::app()->adminurl->redirect('admin.plugin.filesAlias');
+                dcCore::app()->adminurl->redirect('admin.plugin.' . basename(__DIR__));
             } catch (Exception $e) {
                 dcCore::app()->error->add($e->getMessage());
             }
@@ -83,11 +83,11 @@ if ($part == 'new') {
     echo
     dcPage::breadcrumb([
         html::escapeHTML(dcCore::app()->blog->name) => '',
-        __('Media sharing')                         => dcCore::app()->adminurl->get('admin.plugin.filesAlias'),
+        __('Media sharing')                         => dcCore::app()->adminurl->get('admin.plugin.' . basename(__DIR__)),
         __('New alias')                             => '',
     ]) .
     dcPage::notices() .
-    '<form action="' . dcCore::app()->adminurl->get('admin.plugin.filesAlias') . '" method="post">' .
+    '<form action="' . dcCore::app()->adminurl->get('admin.plugin.' . basename(__DIR__)) . '" method="post">' .
     '<h3>' . __('New alias') . '</h3>' .
     '<p ><label for="filesalias_destination" class="required">' . __('Destination:') . ' </label>' .
     form::field('filesalias_destination', 70, 255) . '</p>' .
@@ -113,14 +113,14 @@ if ($part == 'new') {
     ]) .
     dcPage::notices() .
     '<p class="top-add"><a class="button add" href="' .
-        dcCore::app()->adminurl->get('admin.plugin.filesAlias', ['part' => 'new']) .
+        dcCore::app()->adminurl->get('admin.plugin.' . basename(__DIR__), ['part' => 'new']) .
     '">' . __('New alias') . '</a></p>';
 
     if (empty($aliases)) {
         echo '<p>' . __('No alias') . '</p>';
     } else {
         echo
-        '<form action="' . dcCore::app()->adminurl->get('admin.plugin.filesAlias') . '" method="post">' .
+        '<form action="' . dcCore::app()->adminurl->get('admin.plugin.' . basename(__DIR__)) . '" method="post">' .
         '<div class="table-outer">' .
         '<table><thead>' .
         '<caption>' . __('Aliases list') . '</caption>' .
