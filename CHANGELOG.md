@@ -1,3 +1,10 @@
+todo:
+- add form to admin media item page
+
+0.8 - 2023.03.26
+- require dotclear 2.26
+- use namespace
+
 0.7.1 - 2022.12.21
 - use abstract plugin id
 - fix install
