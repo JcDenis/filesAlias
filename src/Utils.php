@@ -10,53 +10,48 @@
  * @copyright Jean-Christian Denis
  * @copyright GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
  */
-class filesAliases
+declare(strict_types=1);
+
+namespace Dotclear\Plugin\filesAlias;
+
+use dcCore;
+use dcMedia;
+use dcRecord;
+use Exception;
+
+class Utils
 {
-    protected $aliases;
-
-    public function __construct()
+    public static function getAliases(): dcRecord
     {
+        return new dcRecord(dcCore::app()->con->select(
+            'SELECT filesalias_url, filesalias_destination, filesalias_password, filesalias_disposable ' .
+            'FROM ' . dcCore::app()->prefix . My::ALIAS_TABLE_NAME . ' ' .
+            "WHERE blog_id = '" . dcCore::app()->con->escapeStr(dcCore::app()->blog->id) . "' " .
+            'ORDER BY filesalias_url ASC '
+        ));
     }
 
-    public function getAliases()
+    public static function getAlias(string $url): dcRecord
     {
-        if (is_array($this->aliases)) {
-            return $this->aliases;
-        }
-
-        $this->aliases = [];
-        $sql           = 'SELECT filesalias_url, filesalias_destination, filesalias_password, filesalias_disposable ' .
-                'FROM ' . dcCore::app()->prefix . initFilesAlias::ALIAS_TABLE_NAME . ' ' .
-                "WHERE blog_id = '" . dcCore::app()->con->escape(dcCore::app()->blog->id) . "' " .
-                'ORDER BY filesalias_url ASC ';
-        $this->aliases = dcCore::app()->con->select($sql)->rows();
-
-        return $this->aliases;
+        return new dcRecord(dcCore::app()->con->select(
+            'SELECT filesalias_url, filesalias_destination, filesalias_password, filesalias_disposable ' .
+            'FROM ' . dcCore::app()->prefix . My::ALIAS_TABLE_NAME . ' ' .
+            "WHERE blog_id = '" . dcCore::app()->con->escapeStr(dcCore::app()->blog->id) . "' " .
+            "AND filesalias_url = '" . dcCore::app()->con->escapeStr($url) . "' " .
+            'ORDER BY filesalias_url ASC '
+        ));
     }
 
-    public function getAlias($url)
-    {
-        $strReq = 'SELECT filesalias_url, filesalias_destination, filesalias_password, filesalias_disposable ' .
-                'FROM ' . dcCore::app()->prefix . initFilesAlias::ALIAS_TABLE_NAME . ' ' .
-                "WHERE blog_id = '" . dcCore::app()->con->escape(dcCore::app()->blog->id) . "' " .
-                "AND filesalias_url = '" . dcCore::app()->con->escape($url) . "' " .
-                'ORDER BY filesalias_url ASC ';
-
-        $rs = dcCore::app()->con->select($strReq);
-
-        return $rs;
-    }
-
-    public function updateAliases($aliases)
+    public static function updateAliases(array $aliases): void
     {
         dcCore::app()->con->begin();
 
         try {
-            $this->deleteAliases();
+            self::deleteAliases();
             foreach ($aliases as $k => $v) {
                 if (!empty($v['filesalias_url']) && !empty($v['filesalias_destination'])) {
                     $v['filesalias_disposable'] = isset($v['filesalias_disposable']) ? true : false;
-                    $this->createAlias($v['filesalias_url'], $v['filesalias_destination'], $v['filesalias_disposable'], $v['filesalias_password']);
+                    self::createAlias($v['filesalias_url'], $v['filesalias_destination'], $v['filesalias_disposable'], $v['filesalias_password']);
                 }
             }
 
@@ -68,7 +63,7 @@ class filesAliases
         }
     }
 
-    public function createAlias($url, $destination, $disposable = 0, $password = null)
+    public static function createAlias(string $url, string $destination, bool $disposable = false, ?string $password = null): void
     {
         if (!$url) {
             throw new Exception(__('File URL is empty.'));
@@ -78,49 +73,41 @@ class filesAliases
             throw new Exception(__('File destination is empty.'));
         }
 
-        $cur                         = dcCore::app()->con->openCursor(dcCore::app()->prefix . initFilesAlias::ALIAS_TABLE_NAME);
-        $cur->blog_id                = (string) dcCore::app()->blog->id;
-        $cur->filesalias_url         = (string) $url;
-        $cur->filesalias_destination = (string) $destination;
-        $cur->filesalias_password    = $password;
-        $cur->filesalias_disposable  = abs((int) $disposable);
+        $cur = dcCore::app()->con->openCursor(dcCore::app()->prefix . My::ALIAS_TABLE_NAME);
+        $cur->setField('blog_id', (string) dcCore::app()->blog->id);
+        $cur->setField('filesalias_url', (string) $url);
+        $cur->setField('filesalias_destination', (string) $destination);
+        $cur->setField('filesalias_password', $password);
+        $cur->setField('filesalias_disposable', (int) $disposable);
         $cur->insert();
     }
 
-    public function deleteAliases()
+    public static function deleteAliases(): void
     {
         dcCore::app()->con->execute(
-            'DELETE FROM ' . dcCore::app()->prefix . initFilesAlias::ALIAS_TABLE_NAME . ' ' .
-            "WHERE blog_id = '" . dcCore::app()->con->escape(dcCore::app()->blog->id) . "' "
+            'DELETE FROM ' . dcCore::app()->prefix . My::ALIAS_TABLE_NAME . ' ' .
+            "WHERE blog_id = '" . dcCore::app()->con->escapeStr(dcCore::app()->blog->id) . "' "
         );
     }
 
-    public function deleteAlias($url)
+    public static function deleteAlias(string $url): void
     {
         dcCore::app()->con->execute(
-            'DELETE FROM ' . dcCore::app()->prefix . initFilesAlias::ALIAS_TABLE_NAME . ' ' .
-            "WHERE blog_id = '" . dcCore::app()->con->escape(dcCore::app()->blog->id) . "' " .
-            "AND filesalias_url = '" . dcCore::app()->con->escape($url) . "' "
+            'DELETE FROM ' . dcCore::app()->prefix . My::ALIAS_TABLE_NAME . ' ' .
+            "WHERE blog_id = '" . dcCore::app()->con->escapeStr(dcCore::app()->blog->id) . "' " .
+            "AND filesalias_url = '" . dcCore::app()->con->escapeStr($url) . "' "
         );
     }
-}
 
-class aliasMedia extends dcMedia
-{
-    public function __construct()
-    {
-    }
-
-    public function getMediaId($target)
+    public static function getMediaId(string $target): int
     {
         $strReq = 'SELECT media_id ' .
         'FROM ' . dcCore::app()->prefix . dcMedia::MEDIA_TABLE_NAME . ' ' .
-        //"WHERE media_path = '" . $this->path . "' " .
-        "WHERE media_path = '" . dcCore::app()->con->escape(dcCore::app()->blog->settings->system->public_path) . "' " .
-        "AND media_file = '" . dcCore::app()->con->escape($target) . "' ";
+        "WHERE media_path = '" . dcCore::app()->con->escapeStr((string) dcCore::app()->blog->settings->get('system')->get('public_path')) . "' " .
+        "AND media_file = '" . dcCore::app()->con->escapeStr($target) . "' ";
 
         $rs = dcCore::app()->con->select($strReq);
 
-        return $rs->count() ? $rs->media_id : null;
+        return $rs->count() ? (int) $rs->f('media_id') : 0;
     }
 }

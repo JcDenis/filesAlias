@@ -10,150 +10,231 @@
  * @copyright Jean-Christian Denis
  * @copyright GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
  */
-if (!defined('DC_CONTEXT_ADMIN')) {
-    return null;
-}
+declare(strict_types=1);
 
-$o       = dcCore::app()->__get('filealias');
-$aliases = $o->getAliases();
-$media   = new dcMedia();
-$a       = new aliasMedia();
-$part    = $_REQUEST['part'] ?? 'list';
+namespace Dotclear\Plugin\filesAlias;
 
-# Update aliases
-if (isset($_POST['a']) && is_array($_POST['a'])) {
-    try {
-        $o->updateAliases($_POST['a']);
-        dcAdminNotices::addSuccessNotice(__('Aliases successfully updated.'));
-        dcCore::app()->adminurl->redirect('admin.plugin.' . basename(__DIR__));
-    } catch (Exception $e) {
-        dcCore::app()->error->add($e->getMessage());
+use dcAuth;
+use dcCore;
+use dcMedia;
+use dcNsProcess;
+use dcPage;
+use Dotclear\Helper\Html\Html;
+use Dotclear\Helper\Html\Form\{
+    Checkbox,
+    Form,
+    Hidden,
+    Input,
+    Label,
+    Note,
+    Para,
+    Submit,
+    Text
+};
+use Exception;
+
+class Manage extends dcNsProcess
+{
+    public static function init(): bool
+    {
+        static::$init = defined('DC_CONTEXT_ADMIN') && dcCore::app()->auth->check(
+            dcCore::app()->auth->makePermissions([
+                dcAuth::PERMISSION_ADMIN,
+            ]),
+            dcCore::app()->blog->id
+        );
+
+        return static::$init;
     }
-}
 
-# New alias
-if (isset($_POST['filesalias_url'])) {
-    $url = empty($_POST['filesalias_url']) ? PallazzoTools::rand_uniqid() : $_POST['filesalias_url'];
+    public static function process(): bool
+    {
+        if (!static::$init) {
+            return false;
+        }
 
-    $target   = $_POST['filesalias_destination'];
-    $totrash  = isset($_POST['filesalias_disposable']) ? true : false;
-    $password = empty($_POST['filesalias_password']) ? '' : $_POST['filesalias_password'];
+        if (!(dcCore::app()->media instanceof dcMedia)) {
+            dcCore::app()->media = new dcMedia();
+        }
 
-    if (preg_match('/^' . preg_quote($media->root_url, '/') . '/', $target)) {
-        $target = preg_replace('/^' . preg_quote($media->root_url, '/') . '/', '', $target);
-        $found  = $a->getMediaId($target);
-
-        if (!empty($found)) {
+        # Update aliases
+        if (isset($_POST['a']) && is_array($_POST['a'])) {
             try {
-                $o->createAlias($url, $target, $totrash, $password);
-                dcAdminNotices::addSuccessNotice(__('Alias for this media created.'));
-                dcCore::app()->adminurl->redirect('admin.plugin.' . basename(__DIR__));
+                Utils::updateAliases($_POST['a']);
+                dcPage::addSuccessNotice(__('Aliases successfully updated.'));
+                dcCore::app()->adminurl->redirect('admin.plugin.' . My::id());
             } catch (Exception $e) {
                 dcCore::app()->error->add($e->getMessage());
             }
-        } else {
-            dcCore::app()->error->add(__('Target is not in media manager.'));
         }
-    } else {
-        $found = $a->getMediaId($target);
 
-        if (!empty($found)) {
-            try {
-                $o->createAlias($url, $target, $totrash, $password);
-                dcAdminNotices::addSuccessNotice(__('Alias for this media modified.'));
-                dcCore::app()->adminurl->redirect('admin.plugin.' . basename(__DIR__));
-            } catch (Exception $e) {
-                dcCore::app()->error->add($e->getMessage());
+        # New alias
+        if (isset($_POST['filesalias_url'])) {
+            $url = empty($_POST['filesalias_url']) ? PallazzoTools::rand_uniqid() : $_POST['filesalias_url'];
+
+            $target   = $_POST['filesalias_destination'];
+            $totrash  = isset($_POST['filesalias_disposable']) ? true : false;
+            $password = empty($_POST['filesalias_password']) ? '' : $_POST['filesalias_password'];
+
+            if (preg_match('/^' . preg_quote(dcCore::app()->media->root_url, '/') . '/', $target)) {
+                $target = preg_replace('/^' . preg_quote(dcCore::app()->media->root_url, '/') . '/', '', $target);
+                $found  = Utils::getMediaId($target);
+
+                if (!empty($found)) {
+                    try {
+                        Utils::createAlias($url, $target, $totrash, $password);
+                        dcPage::addSuccessNotice(__('Alias for this media created.'));
+                        dcCore::app()->adminurl->redirect('admin.plugin.' . My::id());
+                    } catch (Exception $e) {
+                        dcCore::app()->error->add($e->getMessage());
+                    }
+                } else {
+                    dcCore::app()->error->add(__('Target is not in media manager.'));
+                }
+            } else {
+                $found = Utils::getMediaId($target);
+
+                if (!empty($found)) {
+                    try {
+                        Utils::createAlias($url, $target, $totrash, $password);
+                        dcPage::addSuccessNotice(__('Alias for this media modified.'));
+                        dcCore::app()->adminurl->redirect('admin.plugin.' . My::id());
+                    } catch (Exception $e) {
+                        dcCore::app()->error->add($e->getMessage());
+                    }
+                } else {
+                    dcCore::app()->error->add(__('Target is not in media manager.'));
+                }
             }
-        } else {
-            dcCore::app()->error->add(__('Target is not in media manager.'));
         }
+
+        return true;
     }
-}
-?>
-<html>
-<head>
-<title><?php echo __('Media sharing'); ?></title>
-</head>
 
-<body>
-<?php
+    public static function render(): void
+    {
+        if (!self::$init) {
+            return;
+        }
 
-if ($part == 'new') {
-    echo
-    dcPage::breadcrumb([
-        html::escapeHTML(dcCore::app()->blog->name) => '',
-        __('Media sharing')                         => dcCore::app()->adminurl->get('admin.plugin.' . basename(__DIR__)),
-        __('New alias')                             => '',
-    ]) .
-    dcPage::notices() .
-    '<form action="' . dcCore::app()->adminurl->get('admin.plugin.' . basename(__DIR__)) . '" method="post">' .
-    '<h3>' . __('New alias') . '</h3>' .
-    '<p ><label for="filesalias_destination" class="required">' . __('Destination:') . ' </label>' .
-    form::field('filesalias_destination', 70, 255) . '</p>' .
-    '<p class="form-note warn">' . __('Destination file must be in media manager.') . '</p>' .
-    '<p><label for="filesalias_url">' . __('URL (alias):') . '</label>' .
-    form::field('filesalias_url', 70, 255) . '</p>' .
-    '<p class="form-note info">' . __('Leave empty to get a randomize alias.') . '</p>' .
-    '<p><label for="filesalias_password">' . __('Password:') . '</label> ' .
-    form::field('filesalias_password', 70, 255) . '</p>' .
-    '<p>' . form::checkbox('filesalias_disposable', 1) .
-    '<label for="filesalias_disposable" class="classic">' . __('Disposable') . '</label></p>' .
-    '<p>' .
-    dcCore::app()->formNonce() .
-    form::hidden('part', 'new') .
-    '<input type="submit" value="' . __('Save') . '" /></p>' .
-    '<p class="form-note">' . sprintf(__('Do not put blog media URL "%s" in fields or it will be removed.'), $media->root_url) . '</p>' .
-    '</form>';
-} else {
-    echo
-    dcPage::breadcrumb([
-        html::escapeHTML(dcCore::app()->blog->name) => '',
-        __('Media sharing')                         => '',
-    ]) .
-    dcPage::notices() .
-    '<p class="top-add"><a class="button add" href="' .
-        dcCore::app()->adminurl->get('admin.plugin.' . basename(__DIR__), ['part' => 'new']) .
-    '">' . __('New alias') . '</a></p>';
+        dcPage::openModule(My::name());
 
-    if (empty($aliases)) {
-        echo '<p>' . __('No alias') . '</p>';
-    } else {
+        if (($_REQUEST['part'] ?? '') == 'new') {
+            self::displayAliasForm();
+        } else {
+            self::displayAliasList();
+        }
+
+        dcPage::helpBlock('filesAlias');
+
+        dcPage::closeModule();
+    }
+
+    private static function displayAliasForm(): void
+    {
         echo
-        '<form action="' . dcCore::app()->adminurl->get('admin.plugin.' . basename(__DIR__)) . '" method="post">' .
-        '<div class="table-outer">' .
-        '<table><thead>' .
-        '<caption>' . __('Aliases list') . '</caption>' .
-        '<tr>' .
-        '<th class="nowrap" scope="col">' . __('Destination') . ' - <ins>' . html::escapeHTML($media->root_url) . '</ins><code>(-?-)</code></th>' .
-        '<th class="nowrap" scope="col">' . __('Alias') . ' - <ins>' . dcCore::app()->blog->url . dcCore::app()->url->getBase('filesalias') . '/' . '</ins><code>(-?-)</code></th>' .
-        '<th class="nowrap" scope="col">' . __('Disposable') . '</th>' .
-        '<th class="nowrap" scope="col">' . __('Password') . '</th>' .
-        '</tr></thead><body>';
+        dcPage::breadcrumb([
+            Html::escapeHTML(dcCore::app()->blog->name) => '',
+            My::name()                                  => dcCore::app()->adminurl->get('admin.plugin.' . My::id()),
+            __('New alias')                             => '',
+        ]) .
+        dcPage::notices() .
+        (new Form('filesalias_new'))->action(dcCore::app()->adminurl->get('admin.plugin.' . My::id()))->method('post')->fields([
+            (new Text('h3', Html::escapeHTML(__('New alias')))),
+            (new Note())->text(sprintf(__('Do not put blog media URL "%s" in fields or it will be removed.'), dcCore::app()->media->root_url))->class('form-note'),
+            // destination
+            (new Para())->items([
+                (new Label(__('Destination:')))->for('filesalias_destination')->class('required'),
+                (new Input('filesalias_destination'))->size(70)->maxlenght(255),
+            ]),
+            (new Note())->text(__('Destination file must be in media manager.'))->class('form-note'),
+            // url
+            (new Para())->items([
+                (new Label(__('URL (alias):')))->for('filesalias_url')->class('required'),
+                (new Input('filesalias_url'))->size(70)->maxlenght(255),
+            ]),
+            (new Note())->text(__('Leave empty to get a randomize alias.'))->class('form-note'),
+            // password
+            (new Para())->items([
+                (new Label(__('Password:')))->for('filesalias_password')->class('required'),
+                (new Input('filesalias_password'))->size(70)->maxlenght(255),
+            ]),
+            // disposable
+            (new Para())->items([
+                (new Checkbox('filesalias_disposable', false))->value(1),
+                (new Label(__('Disposable'), Label::OUTSIDE_LABEL_AFTER))->for('filesalias_disposable')->class('classic'),
+            ]),
+            // submit
+            (new Para())->items([
+                (new Submit(['save']))->value(__('Save')),
+                (new Hidden(['part'], 'new')),
+                (new Text('', dcCore::app()->formNonce())),
+            ]),
+        ])->render();
+    }
 
-        foreach ($aliases as $k => $v) {
-            $url = dcCore::app()->blog->url . dcCore::app()->url->getBase('filesalias') . '/' . html::escapeHTML($v['filesalias_url']);
+    private static function displayAliasList(): void
+    {
+        $aliases = Utils::getAliases();
 
-            $link = '<a href="' . $url . '">' . __('link') . '</a>';
-            $v['filesalias_disposable'] ??= false;
+        echo
+        dcPage::breadcrumb([
+            Html::escapeHTML(dcCore::app()->blog->name) => '',
+            My::name()                                  => '',
+        ]) .
+        dcPage::notices() .
+        '<p class="top-add"><a class="button add" href="' .
+            dcCore::app()->adminurl->get('admin.plugin.' . My::id(), ['part' => 'new']) .
+        '">' . __('New alias') . '</a></p>';
+
+        if ($aliases->isEmpty()) {
+            echo '<p>' . __('No alias') . '</p>';
+        } else {
+            $lines = '';
+            $i     = 0;
+            while ($aliases->fetch()) {
+                $url = dcCore::app()->blog->url . dcCore::app()->url->getBase('filesalias') . '/' . Html::escapeHTML($aliases->f('filesalias_url'));
+
+                $lines .= '<tr class="line" id="l_' . $i . '">' .
+                '<td>' .
+                (new Input(['a[' . $i . '][filesalias_destination]']))->size(50)->maxlenght(255)->value(Html::escapeHTML($aliases->f('filesalias_destination')))->render() .
+                '</td>' .
+                '<td>' .
+                (new Input(['a[' . $i . '][filesalias_url]']))->size(50)->maxlenght(255)->value(Html::escapeHTML($aliases->f('filesalias_url')))->render() .
+                '<a href="' . $url . '">' . __('link') . '</a></td>' .
+                '<td>' .
+                (new Input(['a[' . $i . '][filesalias_password]']))->size(50)->maxlenght(255)->value(Html::escapeHTML($aliases->f('filesalias_password')))->render() .
+                '</td>' .
+                '<td class="maximal">' .
+                (new Checkbox(['a[' . $i . '][filesalias_disposable]'], (bool) $aliases->f('filesalias_disposable')))->value(1)->render() .
+                '</td>' .
+                '</tr>';
+                $i++;
+            }
+
             echo
-            '<tr class="line" id="l_' . $k . '">' .
-            '<td>' . form::field(['a[' . $k . '][filesalias_destination]'], 40, 255, html::escapeHTML($v['filesalias_destination'])) . '</td>' .
-            '<td class="maximal">' . form::field(['a[' . $k . '][filesalias_url]'], 20, 255, html::escapeHTML($v['filesalias_url'])) . '<a href="' . $url . '">' . __('link') . '</a></td>' .
-            '<td class="minimal">' . form::checkbox(['a[' . $k . '][filesalias_disposable]'], 1, $v['filesalias_disposable']) . '</td>' .
-            '<td class="minimal">' . form::field(['a[' . $k . '][filesalias_password]'], 10, 255, html::escapeHTML($v['filesalias_password'])) . '</td>' .
-            '</tr>';
+            (new Form('filesalias_list'))->action(dcCore::app()->adminurl->get('admin.plugin.' . My::id()))->method('post')->fields([
+                (new Text(
+                    '',
+                    '<div class="table-outer">' .
+                    '<table><thead>' .
+                    '<caption>' . __('Aliases list') . '</caption>' .
+                    '<tr>' .
+                    '<th class="nowrap" scope="col">' . __('Destination') . ' - <ins>' . Html::escapeHTML(dcCore::app()->media->root_url) . '</ins><code>(-?-)</code></th>' .
+                    '<th class="nowrap" scope="col">' . __('Alias') . ' - <ins>' . dcCore::app()->blog->url . dcCore::app()->url->getBase('filesalias') . '/' . '</ins><code>(-?-)</code></th>' .
+                    '<th class="nowrap" scope="col">' . __('Password') . '</th>' .
+                    '<th class="nowrap" scope="col">' . __('Disposable') . '</th>' .
+                    '</tr></thead><body>' .
+                    $lines .
+                    '</tobdy></table></div>'
+                )),
+                (new Para())->items([
+                    (new Submit(['save']))->value(__('Update')),
+                    (new Hidden(['part'], 'list')),
+                    (new Text('', dcCore::app()->formNonce())),
+                ]),
+                (new Note())->text(__('To remove a link, empty its alias or destination.'))->class('form-note'),
+            ])->render();
         }
-
-        echo '</tobdy></table></div>' .
-        '<p class="form-note">' . __('To remove a link, empty its alias or destination.') . '</p>' .
-        '<p>' . dcCore::app()->formNonce() . form::hidden('part', 'list') .
-        '<input type="submit" value="' . __('Update') . '" /></p>' .
-        '</form>';
     }
 }
-
-dcPage::helpBlock('filesAlias');
-?>
-</body>
-</html>

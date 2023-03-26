@@ -10,21 +10,35 @@
  * @copyright Jean-Christian Denis
  * @copyright GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
  */
-if (!defined('DC_RC_PATH')) {
-    return null;
+declare(strict_types=1);
+
+namespace Dotclear\Plugin\filesAlias;
+
+use dcCore;
+use dcNsProcess;
+
+class Prepend extends dcNsProcess
+{
+    public static function init(): bool
+    {
+        static::$init = defined('DC_RC_PATH');
+
+        return static::$init;
+    }
+
+    public static function process(): bool
+    {
+        if (!static::$init) {
+            return false;
+        }
+
+        dcCore::app()->url->register(
+            'filesalias',
+            'pub',
+            '^pub/(.+)$',
+            [UrlHandler::class, 'alias']
+        );
+
+        return true;
+    }
 }
-
-Clearbricks::lib()->autoload([
-    'filesAliases'  => __DIR__ . '/inc/class.files.alias.php',
-    'aliasMedia'    => __DIR__ . '/inc/class.files.alias.php',
-    'PallazzoTools' => __DIR__ . '/inc/lib.files.alias.tools.php',
-]);
-
-dcCore::app()->__set('filealias', new filesAliases());
-
-dcCore::app()->url->register(
-    'filesalias',
-    'pub',
-    '^pub/(.+)$',
-    ['urlFilesAlias','alias']
-);

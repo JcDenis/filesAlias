@@ -16,5 +16,6 @@ if (!defined('DC_RC_PATH')) {
 
 class initFilesAlias
 {
+    /** @var string This plugin table name */
     public const ALIAS_TABLE_NAME = 'filesalias';
 }

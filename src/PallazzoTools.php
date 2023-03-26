@@ -10,9 +10,16 @@
  * @copyright Jean-Christian Denis
  * @copyright GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
  */
+declare(strict_types=1);
+
+namespace Dotclear\Plugin\filesAlias;
+
+/**
+ * Adapted from Enrico Pallazzo class
+ */
 class PallazzoTools
 {
-    public static function rand_uniqid()
+    public static function rand_uniqid(): string
     {
         $index   = 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $in      = time();

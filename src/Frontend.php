@@ -10,80 +10,37 @@
  * @copyright Jean-Christian Denis
  * @copyright GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
  */
-if (!defined('DC_RC_PATH')) {
-    return null;
-}
+declare(strict_types=1);
 
-dcCore::app()->tpl->setPath(dcCore::app()->tpl->getPath(), __DIR__ . '/default-templates');
-dcCore::app()->tpl->addValue('fileAliasURL', ['templateAlias','fileAliasURL']);
+namespace Dotclear\Plugin\filesAlias;
 
-class templateAlias
+use dcCore;
+use dcNsProcess;
+
+class Frontend extends dcNsProcess
 {
-    public static function fileAliasURL($attr)
+    public static function init(): bool
     {
-        $f = dcCore::app()->tpl->getFilters($attr);
+        static::$init = defined('DC_RC_PATH');
 
-        return '<?php echo ' . sprintf($f, 'dcCore::app()->blog->url.dcCore::app()->url->getBase("filesalias")."/".dcCore::app()->ctx->filealias->filesalias_url') . '; ?>';
-    }
-}
-
-class urlFilesAlias extends dcUrlHandlers
-{
-    public static function alias($args)
-    {
-        $delete = false;
-
-        dcCore::app()->ctx->__set('filealias', dcCore::app()->__get('filealias')->getAlias($args));
-
-        if (dcCore::app()->ctx->__get('filealias')->isEmpty()) {
-            self::p404();
-        }
-
-        if (dcCore::app()->ctx->__get('filealias')->filesalias_disposable) {
-            $delete = true;
-        }
-
-        if (dcCore::app()->ctx->__get('filealias')->filesalias_password) {
-            # Check for match
-            if (!empty($_POST['filepassword']) && $_POST['filepassword'] == dcCore::app()->ctx->__get('filealias')->filesalias_password) {
-                self::servefile(dcCore::app()->ctx->__get('filealias')->filesalias_destination, $args, $delete);
-            } else {
-                self::serveDocument('file-password-form.html', 'text/html', false);
-
-                return;
-            }
-        } else {
-            self::servefile(dcCore::app()->ctx->__get('filealias')->filesalias_destination, $args, $delete);
-        }
+        return static::$init;
     }
 
-    public static function servefile($target, $alias, $delete = false)
+    public static function process(): bool
     {
-        $a     = new aliasMedia();
-        $media = $a->getMediaId($target);
-
-        if (empty($media)) {
-            self::p404();
+        if (!static::$init) {
+            return false;
         }
 
-        $file = dcCore::app()->media->getFile($media);
+        dcCore::app()->tpl->setPath(
+            dcCore::app()->tpl->getPath(),
+            My::path() . DIRECTORY_SEPARATOR . 'default-templates'
+        );
+        dcCore::app()->tpl->addValue(
+            'fileAliasURL',
+            [FrontendTemplate::class, 'fileAliasURL']
+        );
 
-        if (empty($file->file)) {
-            self::p404();
-        }
-
-        header('Content-type: ' . $file->type);
-        header('Content-Length: ' . $file->size);
-        header('Content-Disposition: attachment; filename="' . $file->basename . '"');
-
-        if (ob_get_length() > 0) {
-            ob_end_clean();
-        }
-        flush();
-
-        readfile($file->file);
-        if ($delete) {
-            dcCore::app()->__get('filealias')->deleteAlias($alias);
-        }
+        return true;
     }
 }
