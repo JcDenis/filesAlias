@@ -23,20 +23,26 @@ class Utils
 {
     public static function getAliases(): dcRecord
     {
+        // nullsafe
+        $blog_id = is_null(dcCore::app()->blog) ? '' : dcCore::app()->blog->id;
+
         return new dcRecord(dcCore::app()->con->select(
             'SELECT filesalias_url, filesalias_destination, filesalias_password, filesalias_disposable ' .
             'FROM ' . dcCore::app()->prefix . My::ALIAS_TABLE_NAME . ' ' .
-            "WHERE blog_id = '" . dcCore::app()->con->escapeStr(dcCore::app()->blog->id) . "' " .
+            "WHERE blog_id = '" . dcCore::app()->con->escapeStr($blog_id) . "' " .
             'ORDER BY filesalias_url ASC '
         ));
     }
 
     public static function getAlias(string $url): dcRecord
     {
+        // nullsafe
+        $blog_id = is_null(dcCore::app()->blog) ? '' : dcCore::app()->blog->id;
+
         return new dcRecord(dcCore::app()->con->select(
             'SELECT filesalias_url, filesalias_destination, filesalias_password, filesalias_disposable ' .
             'FROM ' . dcCore::app()->prefix . My::ALIAS_TABLE_NAME . ' ' .
-            "WHERE blog_id = '" . dcCore::app()->con->escapeStr(dcCore::app()->blog->id) . "' " .
+            "WHERE blog_id = '" . dcCore::app()->con->escapeStr($blog_id) . "' " .
             "AND filesalias_url = '" . dcCore::app()->con->escapeStr($url) . "' " .
             'ORDER BY filesalias_url ASC '
         ));
@@ -73,8 +79,11 @@ class Utils
             throw new Exception(__('File destination is empty.'));
         }
 
+        // nullsafe
+        $blog_id = is_null(dcCore::app()->blog) ? '' : dcCore::app()->blog->id;
+
         $cur = dcCore::app()->con->openCursor(dcCore::app()->prefix . My::ALIAS_TABLE_NAME);
-        $cur->setField('blog_id', (string) dcCore::app()->blog->id);
+        $cur->setField('blog_id', $blog_id);
         $cur->setField('filesalias_url', (string) $url);
         $cur->setField('filesalias_destination', (string) $destination);
         $cur->setField('filesalias_password', $password);
@@ -84,23 +93,34 @@ class Utils
 
     public static function deleteAliases(): void
     {
+        // nullsafe
+        $blog_id = is_null(dcCore::app()->blog) ? '' : dcCore::app()->blog->id;
+
         dcCore::app()->con->execute(
             'DELETE FROM ' . dcCore::app()->prefix . My::ALIAS_TABLE_NAME . ' ' .
-            "WHERE blog_id = '" . dcCore::app()->con->escapeStr(dcCore::app()->blog->id) . "' "
+            "WHERE blog_id = '" . dcCore::app()->con->escapeStr($blog_id) . "' "
         );
     }
 
     public static function deleteAlias(string $url): void
     {
+        // nullsafe
+        $blog_id = is_null(dcCore::app()->blog) ? '' : dcCore::app()->blog->id;
+
         dcCore::app()->con->execute(
             'DELETE FROM ' . dcCore::app()->prefix . My::ALIAS_TABLE_NAME . ' ' .
-            "WHERE blog_id = '" . dcCore::app()->con->escapeStr(dcCore::app()->blog->id) . "' " .
+            "WHERE blog_id = '" . dcCore::app()->con->escapeStr($blog_id) . "' " .
             "AND filesalias_url = '" . dcCore::app()->con->escapeStr($url) . "' "
         );
     }
 
     public static function getMediaId(string $target): int
     {
+        // nullsafe
+        if (is_null(dcCore::app()->blog)) {
+            return 0;
+        }
+
         $strReq = 'SELECT media_id ' .
         'FROM ' . dcCore::app()->prefix . dcMedia::MEDIA_TABLE_NAME . ' ' .
         "WHERE media_path = '" . dcCore::app()->con->escapeStr((string) dcCore::app()->blog->settings->get('system')->get('public_path')) . "' " .

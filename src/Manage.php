@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace Dotclear\Plugin\filesAlias;
 
-use dcAuth;
 use dcCore;
 use dcMedia;
 use dcNsProcess;
@@ -37,12 +36,14 @@ class Manage extends dcNsProcess
 {
     public static function init(): bool
     {
-        static::$init = defined('DC_CONTEXT_ADMIN') && dcCore::app()->auth->check(
-            dcCore::app()->auth->makePermissions([
-                dcAuth::PERMISSION_ADMIN,
-            ]),
-            dcCore::app()->blog->id
-        );
+        static::$init = defined('DC_CONTEXT_ADMIN')
+            && !is_null(dcCore::app()->auth) && !is_null(dcCore::app()->blog) // nullsafe
+            && dcCore::app()->auth->check(
+                dcCore::app()->auth->makePermissions([
+                    dcCore::app()->auth::PERMISSION_ADMIN,
+                ]),
+                dcCore::app()->blog->id
+            );
 
         return static::$init;
     }
@@ -53,11 +54,16 @@ class Manage extends dcNsProcess
             return false;
         }
 
+        // nullsafe
+        if (is_null(dcCore::app()->blog) || is_null(dcCore::app()->adminurl)) {
+            return false;
+        }
+
         if (!(dcCore::app()->media instanceof dcMedia)) {
             dcCore::app()->media = new dcMedia();
         }
 
-        # Update aliases
+        // Update aliases
         if (isset($_POST['a']) && is_array($_POST['a'])) {
             try {
                 Utils::updateAliases($_POST['a']);
@@ -68,7 +74,7 @@ class Manage extends dcNsProcess
             }
         }
 
-        # New alias
+        // New alias
         if (isset($_POST['filesalias_url'])) {
             $url = empty($_POST['filesalias_url']) ? PallazzoTools::rand_uniqid() : $_POST['filesalias_url'];
 
@@ -132,6 +138,11 @@ class Manage extends dcNsProcess
 
     private static function displayAliasForm(): void
     {
+        // nullsafe
+        if (is_null(dcCore::app()->blog) || is_null(dcCore::app()->adminurl) || is_null(dcCore::app()->media)) {
+            return;
+        }
+
         echo
         dcPage::breadcrumb([
             Html::escapeHTML(dcCore::app()->blog->name) => '',
@@ -175,6 +186,11 @@ class Manage extends dcNsProcess
 
     private static function displayAliasList(): void
     {
+        // nullsafe
+        if (is_null(dcCore::app()->blog) || is_null(dcCore::app()->adminurl) || is_null(dcCore::app()->media)) {
+            return;
+        }
+
         $aliases = Utils::getAliases();
 
         echo

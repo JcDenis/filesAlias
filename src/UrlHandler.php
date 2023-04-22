@@ -22,6 +22,11 @@ class UrlHandler extends dcUrlHandlers
 {
     public static function alias(string $args): void
     {
+        // nullsafe
+        if (is_null(dcCore::app()->ctx)) {
+            return;
+        }
+
         $delete = false;
 
         dcCore::app()->ctx->__set('filealias', Utils::getAlias($args));
