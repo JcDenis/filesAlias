@@ -24,7 +24,7 @@ class FrontendTemplate
 {
     /**
      * Display file alias URL.
-     * 
+     *
      * attributes:
      *
      *      - any filters     See dcTemplate::getFilters()
