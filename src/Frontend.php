@@ -32,10 +32,12 @@ class Frontend extends dcNsProcess
             return false;
         }
 
+        // add path to template
         dcCore::app()->tpl->setPath(
             dcCore::app()->tpl->getPath(),
             My::path() . DIRECTORY_SEPARATOR . 'default-templates'
         );
+        // register template value for file alias
         dcCore::app()->tpl->addValue(
             'fileAliasURL',
             [FrontendTemplate::class, 'fileAliasURL']

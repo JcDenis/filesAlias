@@ -18,8 +18,16 @@ use dcCore;
 use dcMedia;
 use dcUrlHandlers;
 
+/**
+ * File alias frontend URL handler.
+ */
 class UrlHandler extends dcUrlHandlers
 {
+    /**
+     * File alias page.
+     *
+     * @param   string  $args   The arguments
+     */
     public static function alias(string $args): void
     {
         // nullsafe
@@ -53,7 +61,14 @@ class UrlHandler extends dcUrlHandlers
         }
     }
 
-    public static function servefile(string $target, string $alias, bool $delete = false): void
+    /**
+     * File alias frontend file server.
+     *
+     * @param   string  $target     The media file name
+     * @param   string  $alias      The alias
+     * @param   bool    $delete     Delete after serve
+     */
+    private static function servefile(string $target, string $alias, bool $delete = false): void
     {
         $media = Utils::getMediaId($target);
 

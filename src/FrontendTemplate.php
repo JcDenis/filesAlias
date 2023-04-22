@@ -17,8 +17,22 @@ namespace Dotclear\Plugin\filesAlias;
 use ArrayObject;
 use dcCore;
 
+/**
+ * File alias frontend template.
+ */
 class FrontendTemplate
 {
+    /**
+     * Display file alias URL.
+     * 
+     * attributes:
+     *
+     *      - any filters     See dcTemplate::getFilters()
+     *
+     * @param   ArrayObject     $attr   The attributes
+     *
+     * @return  string
+     */
     public static function fileAliasURL(ArrayObject $attr): string
     {
         return '<?php echo ' . sprintf(

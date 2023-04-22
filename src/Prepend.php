@@ -32,6 +32,7 @@ class Prepend extends dcNsProcess
             return false;
         }
 
+        // register file alias frontend URL handler
         dcCore::app()->url->register(
             'filesalias',
             'pub',

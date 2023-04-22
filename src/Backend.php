@@ -40,6 +40,7 @@ class Backend extends dcNsProcess
             return false;
         }
 
+        // backend sidebar menu icon
         dcCore::app()->menu[dcAdmin::MENU_BLOG]->addItem(
             My::name(),
             dcCore::app()->adminurl->get('admin.plugin.' . My::id()),
@@ -48,6 +49,7 @@ class Backend extends dcNsProcess
             dcCore::app()->auth->check(dcCore::app()->auth->makePermissions([dcCore::app()->auth::PERMISSION_CONTENT_ADMIN]), dcCore::app()->blog->id)
         );
 
+        // backend user dashboard icon
         dcCore::app()->addBehavior('adminDashboardFavoritesV2', function (dcFavorites $favs): void {
             // nullsafe
             if (is_null(dcCore::app()->auth) || is_null(dcCore::app()->adminurl)) {

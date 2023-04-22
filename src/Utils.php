@@ -23,8 +23,16 @@ use Dotclear\Database\Statement\{
 };
 use Exception;
 
+/**
+ * fileAlias records utils
+ */
 class Utils
 {
+    /**
+     * Get aliases records.
+     *
+     * @return  dcRecord    The file alias records
+     */
     public static function getAliases(): dcRecord
     {
         // nullsafe
@@ -45,6 +53,11 @@ class Utils
         return is_null($rs) ? dcRecord::newFromArray([]) : $rs;
     }
 
+    /**
+     * Get alias record.
+     *
+     * @return  dcRecord    The alias record
+     */
     public static function getAlias(string $url): dcRecord
     {
         // nullsafe
@@ -66,6 +79,22 @@ class Utils
         return is_null($rs) ? dcRecord::newFromArray([]) : $rs;
     }
 
+    /**
+     * Update aliases.
+     *
+     * This remove all aliases on current blog
+     * before creating new ones.
+     *
+     * Each $aliases entry looks like:
+     * [
+     *      filesalias_url => string,
+     *      filesalias_destination => string,
+     *      filesalias_disposable => bool
+     *      filesalias_password => string
+     * ]
+     *
+     * @param   array   $aliases    The new aliases
+     */
     public static function updateAliases(array $aliases): void
     {
         dcCore::app()->con->begin();
@@ -87,6 +116,14 @@ class Utils
         }
     }
 
+    /**
+     * Create an alias.
+     *
+     * @param   string          $url            The URL
+     * @param   string          $destination    The destination
+     * @param   bool            $disposable     Is disposable
+     * @param   null|string     $password       The optionnal password
+     */
     public static function createAlias(string $url, string $destination, bool $disposable = false, ?string $password = null): void
     {
         if (empty($url)) {
@@ -109,6 +146,9 @@ class Utils
         $cur->insert();
     }
 
+    /**
+     * Delete all aliases.
+     */
     public static function deleteAliases(): void
     {
         // nullsafe
@@ -120,6 +160,11 @@ class Utils
             ->delete();
     }
 
+    /**
+     * Dlete an alias.
+     *
+     * @param   string  $url    The alias URL
+     */
     public static function deleteAlias(string $url): void
     {
         // nullsafe
@@ -132,6 +177,13 @@ class Utils
             ->delete();
     }
 
+    /**
+     * Get media id.
+     *
+     * @param   string  $target     The media file name
+     *
+     * @return  int     The media ID
+     */
     public static function getMediaId(string $target): int
     {
         // nullsafe
