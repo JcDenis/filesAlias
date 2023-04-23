@@ -16,7 +16,7 @@ namespace Dotclear\Plugin\filesAlias;
 
 use dcCore;
 use dcMedia;
-use dcRecord;
+use Dotclear\Database\MetaRecord;
 use Dotclear\Database\Statement\{
     DeleteStatement,
     SelectStatement
@@ -31,9 +31,9 @@ class Utils
     /**
      * Get aliases records.
      *
-     * @return  dcRecord    The file alias records
+     * @return  MetaRecord    The file alias records
      */
-    public static function getAliases(): dcRecord
+    public static function getAliases(): MetaRecord
     {
         // nullsafe
         $blog_id = is_null(dcCore::app()->blog) ? '' : dcCore::app()->blog->id;
@@ -50,15 +50,15 @@ class Utils
             ->order('filesalias_url ASC')
             ->select();
 
-        return is_null($rs) ? dcRecord::newFromArray([]) : $rs;
+        return is_null($rs) ? MetaRecord::newFromArray([]) : $rs;
     }
 
     /**
      * Get alias record.
      *
-     * @return  dcRecord    The alias record
+     * @return  MetaRecord    The alias record
      */
-    public static function getAlias(string $url): dcRecord
+    public static function getAlias(string $url): MetaRecord
     {
         // nullsafe
         $blog_id = is_null(dcCore::app()->blog) ? '' : dcCore::app()->blog->id;
@@ -76,7 +76,7 @@ class Utils
             ->order('filesalias_url ASC')
             ->select();
 
-        return is_null($rs) ? dcRecord::newFromArray([]) : $rs;
+        return is_null($rs) ? MetaRecord::newFromArray([]) : $rs;
     }
 
     /**

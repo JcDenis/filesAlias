@@ -14,9 +14,9 @@ declare(strict_types=1);
 
 namespace Dotclear\Plugin\filesAlias;
 
-use dbStruct;
 use dcCore;
 use dcNsProcess;
+use Dotclear\Database\Structure;
 use Exception;
 
 class Install extends dcNsProcess
@@ -35,21 +35,21 @@ class Install extends dcNsProcess
         }
 
         try {
-            $s = new dbStruct(dcCore::app()->con, dcCore::app()->prefix);
+            $s = new Structure(dcCore::app()->con, dcCore::app()->prefix);
 
-            $s->{My::ALIAS_TABLE_NAME}
-                ->blog_id('varchar', 32, false)
-                ->filesalias_url('varchar', 255, false)
-                ->filesalias_destination('varchar', 255, false)
-                ->filesalias_password('varchar', 32, true, null)
-                ->filesalias_disposable('smallint', 0, false, 0)
+            $s->__get(My::ALIAS_TABLE_NAME)
+                ->field('blog_id', 'varchar', 32, false)
+                ->field('filesalias_url', 'varchar', 255, false)
+                ->field('ilesalias_destination', 'varchar', 255, false)
+                ->field('filesalias_password', 'varchar', 32, true, null)
+                ->field('filesalias_disposable', 'smallint', 0, false, 0)
 
                 ->primary('pk_filesalias', 'blog_id', 'filesalias_url')
                 ->index('idx_filesalias_blog_id', 'btree', 'blog_id')
                 ->reference('fk_filesalias_blog', 'blog_id', 'blog', 'blog_id', 'cascade', 'cascade')
             ;
 
-            $si      = new dbStruct(dcCore::app()->con, dcCore::app()->prefix);
+            $si      = new Structure(dcCore::app()->con, dcCore::app()->prefix);
             $changes = $si->synchronize($s);
 
             return true;
