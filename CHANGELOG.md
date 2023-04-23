@@ -1,6 +1,10 @@
 todo:
 - add form to admin media item page
 
+0.9.1 - 2023.04.23
+- require dotclear 2.26
+- use latest dotclear namespace (database)
+
 0.9 - 2023.04.22
 - require dotclear 2.26
 - add plugin Uninstaller features
