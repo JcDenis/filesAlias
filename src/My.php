@@ -14,13 +14,18 @@ declare(strict_types=1);
 
 namespace Dotclear\Plugin\filesAlias;
 
+use dcCore;
+
 /**
- * Plugin definitions
+ * This module definitions.
  */
 class My extends \initFilesAlias
 {
+    /** @var    string  This module required php version */
+    public const PHP_MIN = '7.4';
+
     /**
-     * This module id
+     * This module id.
      */
     public static function id(): string
     {
@@ -28,18 +33,28 @@ class My extends \initFilesAlias
     }
 
     /**
-     * This module name
+     * This module name.
      */
     public static function name(): string
     {
-        return __('Media sharing');
+        $name = dcCore::app()->plugins->moduleInfo(self::id(), 'name');
+
+        return __(is_string($name) ? $name : self::id());
     }
 
     /**
-     * This module root path
+     * This module path.
      */
     public static function path(): string
     {
         return dirname(__DIR__);
+    }
+
+    /**
+     * Check this module PHP version compliant.
+     */
+    public static function phpCompliant(): bool
+    {
+        return version_compare(phpversion(), self::PHP_MIN, '>=');
     }
 }
