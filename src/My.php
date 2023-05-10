@@ -21,9 +21,6 @@ use dcCore;
  */
 class My extends \initFilesAlias
 {
-    /** @var    string  This module required php version */
-    public const PHP_MIN = '7.4';
-
     /**
      * This module id.
      */
@@ -48,13 +45,5 @@ class My extends \initFilesAlias
     public static function path(): string
     {
         return dirname(__DIR__);
-    }
-
-    /**
-     * Check this module PHP version compliant.
-     */
-    public static function phpCompliant(): bool
-    {
-        return version_compare(phpversion(), self::PHP_MIN, '>=');
     }
 }
