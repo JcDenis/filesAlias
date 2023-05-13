@@ -1,6 +1,10 @@
 todo:
 - add form to admin media item page
 
+1.0 - 2023.05.13
+- require dotclear 2.26
+- fix type hint and nullsafe
+
 0.9.1 - 2023.04.23
 - require dotclear 2.26
 - use latest dotclear namespace (database)
