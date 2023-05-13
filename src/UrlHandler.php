@@ -35,29 +35,29 @@ class UrlHandler extends dcUrlHandlers
             return;
         }
 
-        $delete = false;
+        $alias = Utils::getAlias($args);
 
-        dcCore::app()->ctx->__set('filealias', Utils::getAlias($args));
+        dcCore::app()->ctx->__set('filealias', $alias);
 
-        if (dcCore::app()->ctx->__get('filealias')->isEmpty()) {
+        if ($alias->isEmpty()) {
             self::p404();
         }
 
-        if (dcCore::app()->ctx->__get('filealias')->f('filesalias_disposable')) {
-            $delete = true;
-        }
+        $disposable  = !empty($alias->f('filesalias_disposable'));
+        $password    = is_string($alias->f('filesalias_password')) ? $alias->f('filesalias_password') : '';
+        $destination = is_string($alias->f('filesalias_destination')) ? $alias->f('filesalias_destination') : '';
 
-        if (dcCore::app()->ctx->__get('filealias')->f('filesalias_password')) {
+        if ($password) {
             # Check for match
-            if (!empty($_POST['filepassword']) && $_POST['filepassword'] == dcCore::app()->ctx->__get('filealias')->f('filesalias_password')) {
-                self::servefile(dcCore::app()->ctx->__get('filealias')->f('filesalias_destination'), $args, $delete);
+            if (!empty($_POST['filepassword']) && $_POST['filepassword'] == $password) {
+                self::servefile($destination, $args, $disposable);
             } else {
                 self::serveDocument('file-password-form.html', 'text/html', false);
 
                 return;
             }
         } else {
-            self::servefile(dcCore::app()->ctx->__get('filealias')->f('filesalias_destination'), $args, $delete);
+            self::servefile($destination, $args, $disposable);
         }
     }
 

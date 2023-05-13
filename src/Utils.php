@@ -93,7 +93,7 @@ class Utils
      *      filesalias_password => string
      * ]
      *
-     * @param   array   $aliases    The new aliases
+     * @param   array{filesalias_url:string,filesalias_destination:string,filesalias_disposable:bool,filesalias_password:string}    $aliases    The new aliases
      */
     public static function updateAliases(array $aliases): void
     {
@@ -103,7 +103,7 @@ class Utils
             self::deleteAliases();
             foreach ($aliases as $k => $v) {
                 if (!empty($v['filesalias_url']) && !empty($v['filesalias_destination'])) {
-                    $v['filesalias_disposable'] = isset($v['filesalias_disposable']) ? true : false;
+                    $v['filesalias_disposable'] = !empty($v['filesalias_disposable']);
                     self::createAlias($v['filesalias_url'], $v['filesalias_destination'], $v['filesalias_disposable'], $v['filesalias_password']);
                 }
             }
@@ -190,11 +190,12 @@ class Utils
         if (is_null(dcCore::app()->blog)) {
             return 0;
         }
+        $path = dcCore::app()->blog->settings->get('system')->get('public_path');
 
         $sql = new SelectStatement();
         $rs  = $sql->from(dcCore::app()->prefix . dcMedia::MEDIA_TABLE_NAME)
             ->column('media_id')
-            ->where('media_path = ' . $sql->quote((string) dcCore::app()->blog->settings->get('system')->get('public_path')))
+            ->where('media_path = ' . $sql->quote(is_string($path) ? $path : ''))
             ->and('media_file = ' . $sql->quote($target))
             ->select();
 

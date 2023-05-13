@@ -17,6 +17,7 @@ namespace Dotclear\Plugin\filesAlias;
 use dcAdmin;
 use dcCore;
 use dcFavorites;
+use dcMenu;
 use dcNsProcess;
 use dcPage;
 
@@ -41,13 +42,15 @@ class Backend extends dcNsProcess
         }
 
         // backend sidebar menu icon
-        dcCore::app()->menu[dcAdmin::MENU_BLOG]->addItem(
-            My::name(),
-            dcCore::app()->adminurl->get('admin.plugin.' . My::id()),
-            dcPage::getPF(My::id() . '/icon.svg'),
-            preg_match('/' . preg_quote(dcCore::app()->adminurl->get('admin.plugin.' . My::id())) . '(&.*)?$/', $_SERVER['REQUEST_URI']),
-            dcCore::app()->auth->check(dcCore::app()->auth->makePermissions([dcCore::app()->auth::PERMISSION_CONTENT_ADMIN]), dcCore::app()->blog->id)
-        );
+        if ((dcCore::app()->menu[dcAdmin::MENU_BLOG] instanceof dcMenu)) {
+            dcCore::app()->menu[dcAdmin::MENU_BLOG]->addItem(
+                My::name(),
+                dcCore::app()->adminurl->get('admin.plugin.' . My::id()),
+                dcPage::getPF(My::id() . '/icon.svg'),
+                preg_match('/' . preg_quote(dcCore::app()->adminurl->get('admin.plugin.' . My::id())) . '(&.*)?$/', $_SERVER['REQUEST_URI']),
+                dcCore::app()->auth->check(dcCore::app()->auth->makePermissions([dcCore::app()->auth::PERMISSION_CONTENT_ADMIN]), dcCore::app()->blog->id)
+            );
+        }
 
         // backend user dashboard icon
         dcCore::app()->addBehavior('adminDashboardFavoritesV2', function (dcFavorites $favs): void {

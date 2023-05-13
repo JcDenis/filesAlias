@@ -179,7 +179,7 @@ class Manage extends dcNsProcess
             (new Para())->items([
                 (new Submit(['save']))->value(__('Save')),
                 (new Hidden(['part'], 'new')),
-                (new Text('', dcCore::app()->formNonce())),
+                dcCore::app()->formNonce(false),
             ]),
         ])->render();
     }
@@ -209,20 +209,24 @@ class Manage extends dcNsProcess
             $lines = '';
             $i     = 0;
             while ($aliases->fetch()) {
-                $url = dcCore::app()->blog->url . dcCore::app()->url->getBase('filesalias') . '/' . Html::escapeHTML($aliases->f('filesalias_url'));
+                $url         = is_string($aliases->f('filesalias_url')) ? $aliases->f('filesalias_url') : '';
+                $destination = is_string($aliases->f('filesalias_destination')) ? $aliases->f('filesalias_destination') : '';
+                $password    = is_string($aliases->f('filesalias_password')) ? $aliases->f('filesalias_password') : '';
+                $disposable  = !empty($aliases->f('filesalias_disposable'));
+                $full        = dcCore::app()->blog->url . dcCore::app()->url->getBase('filesalias') . '/' . Html::escapeHTML($url);
 
                 $lines .= '<tr class="line" id="l_' . $i . '">' .
                 '<td>' .
-                (new Input(['a[' . $i . '][filesalias_destination]']))->size(50)->maxlenght(255)->value(Html::escapeHTML($aliases->f('filesalias_destination')))->render() .
+                (new Input(['a[' . $i . '][filesalias_destination]']))->size(50)->maxlenght(255)->value(Html::escapeHTML($destination))->render() .
                 '</td>' .
                 '<td>' .
-                (new Input(['a[' . $i . '][filesalias_url]']))->size(50)->maxlenght(255)->value(Html::escapeHTML($aliases->f('filesalias_url')))->render() .
-                '<a href="' . $url . '">' . __('link') . '</a></td>' .
+                (new Input(['a[' . $i . '][filesalias_url]']))->size(50)->maxlenght(255)->value(Html::escapeHTML($url))->render() .
+                '<a href="' . $full . '">' . __('link') . '</a></td>' .
                 '<td>' .
-                (new Input(['a[' . $i . '][filesalias_password]']))->size(50)->maxlenght(255)->value(Html::escapeHTML($aliases->f('filesalias_password')))->render() .
+                (new Input(['a[' . $i . '][filesalias_password]']))->size(50)->maxlenght(255)->value(Html::escapeHTML($password))->render() .
                 '</td>' .
                 '<td class="maximal">' .
-                (new Checkbox(['a[' . $i . '][filesalias_disposable]'], (bool) $aliases->f('filesalias_disposable')))->value(1)->render() .
+                (new Checkbox(['a[' . $i . '][filesalias_disposable]'], $disposable))->value(1)->render() .
                 '</td>' .
                 '</tr>';
                 $i++;
@@ -247,7 +251,7 @@ class Manage extends dcNsProcess
                 (new Para())->items([
                     (new Submit(['save']))->value(__('Update')),
                     (new Hidden(['part'], 'list')),
-                    (new Text('', dcCore::app()->formNonce())),
+                    dcCore::app()->formNonce(false),
                 ]),
                 (new Note())->text(__('To remove a link, empty its alias or destination.'))->class('form-note'),
             ])->render();
