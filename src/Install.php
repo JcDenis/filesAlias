@@ -40,7 +40,7 @@ class Install extends dcNsProcess
             $s->__get(My::ALIAS_TABLE_NAME)
                 ->field('blog_id', 'varchar', 32, false)
                 ->field('filesalias_url', 'varchar', 255, false)
-                ->field('ilesalias_destination', 'varchar', 255, false)
+                ->field('filesalias_destination', 'varchar', 255, false)
                 ->field('filesalias_password', 'varchar', 32, true, null)
                 ->field('filesalias_disposable', 'smallint', 0, false, 0)
 
