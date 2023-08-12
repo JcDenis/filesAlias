@@ -2,12 +2,12 @@
 <modules xmlns:da="http://dotaddict.org/da/">
   <module id="filesAlias">
     <name>Files alias</name>
-    <version>1.0</version>
+    <version>1.1</version>
     <author>Osku and contributors</author>
     <desc>Manage aliases of your blog's media</desc>
-    <file>https://github.com/JcDenis/filesAlias/releases/download/v1.0/plugin-filesAlias.zip</file>
-    <da:dcmin>2.26</da:dcmin>
-    <da:details>https://plugins.dotaddict.org/dc2/details/filesAlias</da:details>
-    <da:support>https://github.com/JcDenis/filesAlias</da:support>
+    <file>https://git.dotclear.watch/JcDenis/filesAlias/releases/download/v1.1/plugin-filesAlias.zip</file>
+    <da:dcmin>2.27</da:dcmin>
+    <da:details>https://git.dotclear.watch/JcDenis/filesAlias/src/branch/master/README.md</da:details>
+    <da:support>https://git.dotclear.watch/JcDenis/filesAlias/issues</da:support>
   </module>
 </modules>
