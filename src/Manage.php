@@ -1,21 +1,10 @@
 <?php
-/**
- * @brief filesAlias, a plugin for Dotclear 2
- *
- * @package Dotclear
- * @subpackage Plugin
- *
- * @author Osku and contributors
- *
- * @copyright Jean-Christian Denis
- * @copyright GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
- */
+
 declare(strict_types=1);
 
 namespace Dotclear\Plugin\filesAlias;
 
-use dcCore;
-use dcMedia;
+use Dotclear\App;
 use Dotclear\Core\Backend\{
     Notices,
     Page
@@ -35,6 +24,14 @@ use Dotclear\Helper\Html\Form\{
 };
 use Exception;
 
+/**
+ * @brief       filesAlias manage class.
+ * @ingroup     filesAlias
+ *
+ * @author      Osku (author)
+ * @author      Jean-Christian Denis (latest)
+ * @copyright   GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
+ */
 class Manage extends Process
 {
     public static function init(): bool
@@ -44,17 +41,10 @@ class Manage extends Process
 
     public static function process(): bool
     {
-        if (!self::status()) {
+        if (!self::status()
+            || !APP::blog()->isDefined()
+        ) {
             return false;
-        }
-
-        // nullsafe
-        if (is_null(dcCore::app()->blog)) {
-            return false;
-        }
-
-        if (!(dcCore::app()->media instanceof dcMedia)) {
-            dcCore::app()->media = new dcMedia();
         }
 
         // Update aliases
@@ -64,7 +54,7 @@ class Manage extends Process
                 Notices::addSuccessNotice(__('Aliases successfully updated.'));
                 My::redirect();
             } catch (Exception $e) {
-                dcCore::app()->error->add($e->getMessage());
+                App::error()->add($e->getMessage());
             }
         }
 
@@ -76,8 +66,8 @@ class Manage extends Process
             $totrash  = isset($_POST['filesalias_disposable']) ? true : false;
             $password = empty($_POST['filesalias_password']) ? '' : $_POST['filesalias_password'];
 
-            if (preg_match('/^' . preg_quote(dcCore::app()->media->root_url, '/') . '/', $target)) {
-                $target = preg_replace('/^' . preg_quote(dcCore::app()->media->root_url, '/') . '/', '', $target);
+            if (preg_match('/^' . preg_quote(App::media()->root_url, '/') . '/', $target)) {
+                $target = preg_replace('/^' . preg_quote(App::media()->root_url, '/') . '/', '', $target);
                 $found  = Utils::getMediaId($target);
 
                 if (!empty($found)) {
@@ -86,10 +76,10 @@ class Manage extends Process
                         Notices::addSuccessNotice(__('Alias for this media created.'));
                         My::redirect();
                     } catch (Exception $e) {
-                        dcCore::app()->error->add($e->getMessage());
+                        App::error()->add($e->getMessage());
                     }
                 } else {
-                    dcCore::app()->error->add(__('Target is not in media manager.'));
+                    App::error()->add(__('Target is not in media manager.'));
                 }
             } else {
                 $found = Utils::getMediaId($target);
@@ -100,10 +90,10 @@ class Manage extends Process
                         Notices::addSuccessNotice(__('Alias for this media modified.'));
                         My::redirect();
                     } catch (Exception $e) {
-                        dcCore::app()->error->add($e->getMessage());
+                        App::error()->add($e->getMessage());
                     }
                 } else {
-                    dcCore::app()->error->add(__('Target is not in media manager.'));
+                    App::error()->add(__('Target is not in media manager.'));
                 }
             }
         }
@@ -132,21 +122,20 @@ class Manage extends Process
 
     private static function displayAliasForm(): void
     {
-        // nullsafe
-        if (is_null(dcCore::app()->blog) || is_null(dcCore::app()->media)) {
+        if (!App::blog()->isDefined()) {
             return;
         }
 
         echo
         Page::breadcrumb([
-            Html::escapeHTML(dcCore::app()->blog->name) => '',
-            My::name()                                  => My::manageUrl(),
-            __('New alias')                             => '',
+            Html::escapeHTML(App::blog()->name()) => '',
+            My::name()                            => My::manageUrl(),
+            __('New alias')                       => '',
         ]) .
         Notices::getNotices() .
         (new Form('filesalias_new'))->action(My::manageUrl())->method('post')->fields([
             (new Text('h3', Html::escapeHTML(__('New alias')))),
-            (new Note())->text(sprintf(__('Do not put blog media URL "%s" in fields or it will be removed.'), dcCore::app()->media->root_url))->class('form-note'),
+            (new Note())->text(sprintf(__('Do not put blog media URL "%s" in fields or it will be removed.'), App::media()->root_url))->class('form-note'),
             // destination
             (new Para())->items([
                 (new Label(__('Destination:')))->for('filesalias_destination')->class('required'),
@@ -179,8 +168,7 @@ class Manage extends Process
 
     private static function displayAliasList(): void
     {
-        // nullsafe
-        if (is_null(dcCore::app()->blog) || is_null(dcCore::app()->media)) {
+        if (!App::blog()->isDefined()) {
             return;
         }
 
@@ -188,8 +176,8 @@ class Manage extends Process
 
         echo
         Page::breadcrumb([
-            Html::escapeHTML(dcCore::app()->blog->name) => '',
-            My::name()                                  => '',
+            Html::escapeHTML(App::blog()->name()) => '',
+            My::name()                            => '',
         ]) .
         Notices::getNotices() .
         '<p class="top-add"><a class="button add" href="' .
@@ -206,7 +194,7 @@ class Manage extends Process
                 $destination = is_string($aliases->f('filesalias_destination')) ? $aliases->f('filesalias_destination') : '';
                 $password    = is_string($aliases->f('filesalias_password')) ? $aliases->f('filesalias_password') : '';
                 $disposable  = !empty($aliases->f('filesalias_disposable'));
-                $full        = dcCore::app()->blog->url . dcCore::app()->url->getBase('filesalias') . '/' . Html::escapeHTML($url);
+                $full        = App::blog()->url() . App::url()->getBase('filesalias') . '/' . Html::escapeHTML($url);
 
                 $lines .= '<tr class="line" id="l_' . $i . '">' .
                 '<td>' .
@@ -233,8 +221,8 @@ class Manage extends Process
                     '<table><thead>' .
                     '<caption>' . __('Aliases list') . '</caption>' .
                     '<tr>' .
-                    '<th class="nowrap" scope="col">' . __('Destination') . ' - <ins>' . Html::escapeHTML(dcCore::app()->media->root_url) . '</ins><code>(-?-)</code></th>' .
-                    '<th class="nowrap" scope="col">' . __('Alias') . ' - <ins>' . dcCore::app()->blog->url . dcCore::app()->url->getBase('filesalias') . '/' . '</ins><code>(-?-)</code></th>' .
+                    '<th class="nowrap" scope="col">' . __('Destination') . ' - <ins>' . Html::escapeHTML(App::media()->root_url) . '</ins><code>(-?-)</code></th>' .
+                    '<th class="nowrap" scope="col">' . __('Alias') . ' - <ins>' . App::blog()->url() . App::url()->getBase('filesalias') . '/' . '</ins><code>(-?-)</code></th>' .
                     '<th class="nowrap" scope="col">' . __('Password') . '</th>' .
                     '<th class="nowrap" scope="col">' . __('Disposable') . '</th>' .
                     '</tr></thead><body>' .

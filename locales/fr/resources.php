@@ -1,13 +1,11 @@
 <?php
 /**
- * @brief filesAlias, a plugin for Dotclear 2
+ * @file
+ * @brief       The plugin filesAlias locales resources
+ * @ingroup     filesAlias
  *
- * @package Dotclear
- * @subpackage Plugin
- *
- * @author Osku and contributors
- *
- * @copyright Jean-Christian Denis
- * @copyright GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
+ * @author      Osku (author)
+ * @author      Jean-Christian Denis (latest)
+ * @copyright   GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
  */
 dcCore::app()->resources['help']['filesAlias'] = __DIR__ . '/help/filesAlias.html';

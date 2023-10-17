@@ -1,21 +1,10 @@
 <?php
-/**
- * @brief filesAlias, a plugin for Dotclear 2
- *
- * @package Dotclear
- * @subpackage Plugin
- *
- * @author Osku and contributors
- *
- * @copyright Jean-Christian Denis
- * @copyright GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
- */
+
 declare(strict_types=1);
 
 namespace Dotclear\Plugin\filesAlias;
 
-use dcCore;
-use dcMedia;
+use Dotclear\App;
 use Dotclear\Database\MetaRecord;
 use Dotclear\Database\Statement\{
     DeleteStatement,
@@ -24,7 +13,12 @@ use Dotclear\Database\Statement\{
 use Exception;
 
 /**
- * fileAlias records utils
+ * @brief       filesAlias records helper class.
+ * @ingroup     filesAlias
+ *
+ * @author      Osku (author)
+ * @author      Jean-Christian Denis (latest)
+ * @copyright   GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
  */
 class Utils
 {
@@ -35,18 +29,15 @@ class Utils
      */
     public static function getAliases(): MetaRecord
     {
-        // nullsafe
-        $blog_id = is_null(dcCore::app()->blog) ? '' : dcCore::app()->blog->id;
-
         $sql = new SelectStatement();
-        $rs  = $sql->from(dcCore::app()->prefix . My::ALIAS_TABLE_NAME)
+        $rs  = $sql->from(App::con()->prefix() . My::ALIAS_TABLE_NAME)
             ->columns([
                 'filesalias_url',
                 'filesalias_destination',
                 'filesalias_password',
                 'filesalias_disposable',
             ])
-            ->where('blog_id = ' . $sql->quote($blog_id))
+            ->where('blog_id = ' . $sql->quote(App::blog()->id()))
             ->order('filesalias_url ASC')
             ->select();
 
@@ -60,18 +51,15 @@ class Utils
      */
     public static function getAlias(string $url): MetaRecord
     {
-        // nullsafe
-        $blog_id = is_null(dcCore::app()->blog) ? '' : dcCore::app()->blog->id;
-
         $sql = new SelectStatement();
-        $rs  = $sql->from(dcCore::app()->prefix . My::ALIAS_TABLE_NAME)
+        $rs  = $sql->from(App::con()->prefix() . My::ALIAS_TABLE_NAME)
             ->columns([
                 'filesalias_url',
                 'filesalias_destination',
                 'filesalias_password',
                 'filesalias_disposable',
             ])
-            ->where('blog_id = ' . $sql->quote($blog_id))
+            ->where('blog_id = ' . $sql->quote(App::blog()->id()))
             ->and('filesalias_url = ' . $sql->quote($url))
             ->order('filesalias_url ASC')
             ->select();
@@ -97,7 +85,7 @@ class Utils
      */
     public static function updateAliases(array $aliases): void
     {
-        dcCore::app()->con->begin();
+        App::con()->begin();
 
         try {
             self::deleteAliases();
@@ -108,9 +96,9 @@ class Utils
                 }
             }
 
-            dcCore::app()->con->commit();
+            App::con()->commit();
         } catch (Exception $e) {
-            dcCore::app()->con->rollback();
+            App::con()->rollback();
 
             throw $e;
         }
@@ -134,11 +122,8 @@ class Utils
             throw new Exception(__('File destination is empty.'));
         }
 
-        // nullsafe
-        $blog_id = is_null(dcCore::app()->blog) ? '' : dcCore::app()->blog->id;
-
-        $cur = dcCore::app()->con->openCursor(dcCore::app()->prefix . My::ALIAS_TABLE_NAME);
-        $cur->setField('blog_id', $blog_id);
+        $cur = App::con()->openCursor(App::con()->prefix() . My::ALIAS_TABLE_NAME);
+        $cur->setField('blog_id', App::blog()->id());
         $cur->setField('filesalias_url', (string) $url);
         $cur->setField('filesalias_destination', (string) $destination);
         $cur->setField('filesalias_password', $password);
@@ -151,12 +136,9 @@ class Utils
      */
     public static function deleteAliases(): void
     {
-        // nullsafe
-        $blog_id = is_null(dcCore::app()->blog) ? '' : dcCore::app()->blog->id;
-
         $sql = new DeleteStatement();
-        $sql->from(dcCore::app()->prefix . My::ALIAS_TABLE_NAME)
-            ->where('blog_id = ' . $sql->quote($blog_id))
+        $sql->from(App::con()->prefix() . My::ALIAS_TABLE_NAME)
+            ->where('blog_id = ' . $sql->quote(App::blog()->id()))
             ->delete();
     }
 
@@ -167,12 +149,9 @@ class Utils
      */
     public static function deleteAlias(string $url): void
     {
-        // nullsafe
-        $blog_id = is_null(dcCore::app()->blog) ? '' : dcCore::app()->blog->id;
-
         $sql = new DeleteStatement();
-        $sql->from(dcCore::app()->prefix . My::ALIAS_TABLE_NAME)
-            ->where('blog_id = ' . $sql->quote($blog_id))
+        $sql->from(App::con()->prefix() . My::ALIAS_TABLE_NAME)
+            ->where('blog_id = ' . $sql->quote(App::blog()->id()))
             ->and('filesalias_url = ' . $sql->quote($url))
             ->delete();
     }
@@ -186,14 +165,13 @@ class Utils
      */
     public static function getMediaId(string $target): int
     {
-        // nullsafe
-        if (is_null(dcCore::app()->blog)) {
+        if (!App::blog()->isDefined()) {
             return 0;
         }
-        $path = dcCore::app()->blog->settings->get('system')->get('public_path');
+        $path = App::blog()->settings()->get('system')->get('public_path');
 
         $sql = new SelectStatement();
-        $rs  = $sql->from(dcCore::app()->prefix . dcMedia::MEDIA_TABLE_NAME)
+        $rs  = $sql->from(App::con()->prefix() . App::postMedia()::MEDIA_TABLE_NAME)
             ->column('media_id')
             ->where('media_path = ' . $sql->quote(is_string($path) ? $path : ''))
             ->and('media_file = ' . $sql->quote($target))

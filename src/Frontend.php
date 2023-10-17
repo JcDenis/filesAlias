@@ -1,22 +1,20 @@
 <?php
-/**
- * @brief filesAlias, a plugin for Dotclear 2
- *
- * @package Dotclear
- * @subpackage Plugin
- *
- * @author Osku and contributors
- *
- * @copyright Jean-Christian Denis
- * @copyright GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
- */
+
 declare(strict_types=1);
 
 namespace Dotclear\Plugin\filesAlias;
 
-use dcCore;
+use Dotclear\App;
 use Dotclear\Core\Process;
 
+/**
+ * @brief       filesAlias frontend class.
+ * @ingroup     filesAlias
+ *
+ * @author      Osku (author)
+ * @author      Jean-Christian Denis (latest)
+ * @copyright   GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
+ */
 class Frontend extends Process
 {
     public static function init(): bool
@@ -31,14 +29,14 @@ class Frontend extends Process
         }
 
         // add path to template
-        dcCore::app()->tpl->setPath(
-            dcCore::app()->tpl->getPath(),
+        App::frontend()->template()->setPath(
+            App::frontend()->template()->getPath(),
             My::path() . DIRECTORY_SEPARATOR . 'default-templates'
         );
         // register template value for file alias
-        dcCore::app()->tpl->addValue(
+        App::frontend()->template()->addValue(
             'fileAliasURL',
-            [FrontendTemplate::class, 'fileAliasURL']
+            FrontendTemplate::fileAliasURL(...)
         );
 
         return true;

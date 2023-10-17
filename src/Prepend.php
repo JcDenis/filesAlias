@@ -1,22 +1,20 @@
 <?php
-/**
- * @brief filesAlias, a plugin for Dotclear 2
- *
- * @package Dotclear
- * @subpackage Plugin
- *
- * @author Osku and contributors
- *
- * @copyright Jean-Christian Denis
- * @copyright GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
- */
+
 declare(strict_types=1);
 
 namespace Dotclear\Plugin\filesAlias;
 
-use dcCore;
+use Dotclear\App;
 use Dotclear\Core\Process;
 
+/**
+ * @brief       filesAlias prepend class.
+ * @ingroup     filesAlias
+ *
+ * @author      Osku (author)
+ * @author      Jean-Christian Denis (latest)
+ * @copyright   GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
+ */
 class Prepend extends Process
 {
     public static function init(): bool
@@ -31,11 +29,11 @@ class Prepend extends Process
         }
 
         // register file alias frontend URL handler
-        dcCore::app()->url->register(
+        App::url()->register(
             'filesalias',
             'pub',
             '^pub/(.+)$',
-            [UrlHandler::class, 'alias']
+            UrlHandler::alias(...)
         );
 
         return true;

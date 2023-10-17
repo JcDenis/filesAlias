@@ -1,27 +1,21 @@
 <?php
-/**
- * @brief filesAlias, a plugin for Dotclear 2
- *
- * @package Dotclear
- * @subpackage Plugin
- *
- * @author Osku and contributors
- *
- * @copyright Jean-Christian Denis
- * @copyright GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
- */
+
 declare(strict_types=1);
 
 namespace Dotclear\Plugin\filesAlias;
 
-use dcCore;
-use dcMedia;
-use dcUrlHandlers;
+use Dotclear\App;
+use Dotclear\Core\Frontend\Url;
 
 /**
- * File alias frontend URL handler.
+ * @brief       filesAlias frontend URL handler class.
+ * @ingroup     filesAlias
+ *
+ * @author      Osku (author)
+ * @author      Jean-Christian Denis (latest)
+ * @copyright   GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
  */
-class UrlHandler extends dcUrlHandlers
+class UrlHandler extends Url
 {
     /**
      * File alias page.
@@ -30,14 +24,9 @@ class UrlHandler extends dcUrlHandlers
      */
     public static function alias(string $args): void
     {
-        // nullsafe
-        if (is_null(dcCore::app()->ctx)) {
-            return;
-        }
-
         $alias = Utils::getAlias($args);
 
-        dcCore::app()->ctx->__set('filealias', $alias);
+        App::frontend()->context()->__set('filealias', $alias);
 
         if ($alias->isEmpty()) {
             self::p404();
@@ -76,11 +65,7 @@ class UrlHandler extends dcUrlHandlers
             self::p404();
         }
 
-        if (!(dcCore::app()->media instanceof dcMedia)) {
-            dcCore::app()->media = new dcMedia();
-        }
-
-        $file = dcCore::app()->media->getFile($media);
+        $file = App::media()->getFile($media);
 
         if (empty($file->file)) {
             self::p404();
