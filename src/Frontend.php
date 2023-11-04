@@ -29,8 +29,7 @@ class Frontend extends Process
         }
 
         // add path to template
-        App::frontend()->template()->setPath(
-            App::frontend()->template()->getPath(),
+        App::frontend()->template()->appendPath(
             My::path() . DIRECTORY_SEPARATOR . 'default-templates'
         );
         // register template value for file alias
