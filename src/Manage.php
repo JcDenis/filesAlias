@@ -67,7 +67,7 @@ class Manage extends Process
             $password = empty($_POST['filesalias_password']) ? '' : $_POST['filesalias_password'];
 
             if (preg_match('/^' . preg_quote(App::media()->root_url, '/') . '/', $target)) {
-                $target = preg_replace('/^' . preg_quote(App::media()->root_url, '/') . '/', '', $target);
+                $target = (string) preg_replace('/^' . preg_quote(App::media()->root_url, '/') . '/', '', $target);
                 $found  = Utils::getMediaId($target);
 
                 if (!empty($found)) {

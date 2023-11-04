@@ -24,7 +24,7 @@ class FrontendTemplate
      *
      *      - any filters     See Tpl::getFilters()
      *
-     * @param   ArrayObject     $attr   The attributes
+     * @param   ArrayObject<string, mixed>  $attr   The attributes
      *
      * @return  string
      */
