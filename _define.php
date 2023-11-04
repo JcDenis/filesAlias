@@ -18,7 +18,7 @@ $this->registerModule(
     'Files alias',
     "Manage aliases of your blog's media",
     'Osku and contributors',
-    '1.2',
+    '1.2.1',
     [
         'requires'    => [['core', '2.28']],
         'permissions' => 'My',
