@@ -139,19 +139,19 @@ class Manage extends Process
             // destination
             (new Para())->items([
                 (new Label(__('Destination:')))->for('filesalias_destination')->class('required'),
-                (new Input('filesalias_destination'))->size(70)->maxlenght(255),
+                (new Input('filesalias_destination'))->size(70)->maxlength(255),
             ]),
             (new Note())->text(__('Destination file must be in media manager.'))->class('form-note'),
             // url
             (new Para())->items([
                 (new Label(__('URL (alias):')))->for('filesalias_url')->class('required'),
-                (new Input('filesalias_url'))->size(70)->maxlenght(255),
+                (new Input('filesalias_url'))->size(70)->maxlength(255),
             ]),
             (new Note())->text(__('Leave empty to get a randomize alias.'))->class('form-note'),
             // password
             (new Para())->items([
                 (new Label(__('Password:')))->for('filesalias_password')->class('required'),
-                (new Input('filesalias_password'))->size(70)->maxlenght(255),
+                (new Input('filesalias_password'))->size(70)->maxlength(255),
             ]),
             // disposable
             (new Para())->items([
@@ -198,13 +198,13 @@ class Manage extends Process
 
                 $lines .= '<tr class="line" id="l_' . $i . '">' .
                 '<td>' .
-                (new Input(['a[' . $i . '][filesalias_destination]']))->size(50)->maxlenght(255)->value(Html::escapeHTML($destination))->render() .
+                (new Input(['a[' . $i . '][filesalias_destination]']))->size(50)->maxlength(255)->value(Html::escapeHTML($destination))->render() .
                 '</td>' .
                 '<td>' .
-                (new Input(['a[' . $i . '][filesalias_url]']))->size(50)->maxlenght(255)->value(Html::escapeHTML($url))->render() .
+                (new Input(['a[' . $i . '][filesalias_url]']))->size(50)->maxlength(255)->value(Html::escapeHTML($url))->render() .
                 '<a href="' . $full . '">' . __('link') . '</a></td>' .
                 '<td>' .
-                (new Input(['a[' . $i . '][filesalias_password]']))->size(50)->maxlenght(255)->value(Html::escapeHTML($password))->render() .
+                (new Input(['a[' . $i . '][filesalias_password]']))->size(50)->maxlength(255)->value(Html::escapeHTML($password))->render() .
                 '</td>' .
                 '<td class="maximal">' .
                 (new Checkbox(['a[' . $i . '][filesalias_disposable]'], $disposable))->value(1)->render() .
