@@ -4,7 +4,7 @@
 ![Date](https://img.shields.io/github/release-date/jcdenis/filesAlias?color=red)
 [![Dotclear](https://img.shields.io/badge/dotclear-v2.33-137bbb.svg)](https://fr.dotclear.org/download)
 [![Dotaddict](https://img.shields.io/badge/dotaddict-official-9ac123.svg)](https://plugins.dotaddict.org/dc2/details/filesAlias)
-[![License](https://img.shields.io/github/license/jcdenis/filesAlias?color=white)](https://github.com/JcDenis/filesAlias/src/branch/master/LICENSE)
+[![License](https://img.shields.io/github/license/jcdenis/filesAlias?color=white)](https://github.com/JcDenis/filesAlias/blob/master/LICENSE)
 
 ## ABOUT
 
@@ -28,7 +28,7 @@ You can change public URL handler (default is _pub/_) by using plugin myUrlhandl
 
 ## LINKS
 
-* [License](https://github.com/JcDenis/filesAlias/src/branch/master/LICENSE)
+* [License](https://github.com/JcDenis/filesAlias/blob/master/LICENSE)
 * [Packages & details](https://github.com/JcDenis/filesAlias/releases) (or on [Dotaddict](https://plugins.dotaddict.org/dc2/details/filesAlias))
 * [Sources & contributions](https://github.com/JcDenis/filesAlias)
 * [Issues & security](https://github.com/JcDenis/filesAlias/issues)
