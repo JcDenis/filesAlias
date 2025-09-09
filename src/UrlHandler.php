@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Dotclear\Plugin\filesAlias;
 
 use Dotclear\App;
-use Dotclear\Core\Frontend\Url;
+use Dotclear\Core\Url;
 
 /**
  * @brief       filesAlias frontend URL handler class.
