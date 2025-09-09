@@ -18,9 +18,9 @@ $this->registerModule(
     'Files alias',
     "Manage aliases of your blog's media",
     'Osku and contributors',
-    '1.2.2',
+    '1.3',
     [
-        'requires'    => [['core', '2.28']],
+        'requires'    => [['core', '2.36']],
         'permissions' => 'My',
         'type'        => 'plugin',
         'support'     => 'https://github.com/JcDenis/' . $this->id . '/issues',
