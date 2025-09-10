@@ -64,12 +64,12 @@ class Manage
         if (isset($_POST['filesalias_url'])) {
             $url = empty($_POST['filesalias_url']) ? PallazzoTools::rand_uniqid() : $_POST['filesalias_url'];
 
-            $target   = $_POST['filesalias_destination'];
+            $target   = (string) $_POST['filesalias_destination'];
             $totrash  = isset($_POST['filesalias_disposable']) ? true : false;
             $password = empty($_POST['filesalias_password']) ? '' : $_POST['filesalias_password'];
 
-            if (preg_match('/^' . preg_quote(App::media()->root_url, '/') . '/', $target)) {
-                $target = (string) preg_replace('/^' . preg_quote(App::media()->root_url, '/') . '/', '', $target);
+            if (preg_match('/^' . preg_quote(App::media()->getRootUrl(), '/') . '/', $target)) {
+                $target = (string) preg_replace('/^' . preg_quote(App::media()->getRootUrl(), '/') . '/', '', $target);
                 $found  = Utils::getMediaId($target);
 
                 if (!empty($found)) {
@@ -137,7 +137,7 @@ class Manage
         Notices::getNotices() .
         (new Form('filesalias_new'))->action(My::manageUrl())->method('post')->fields([
             (new Text('h3', Html::escapeHTML(__('New alias')))),
-            (new Note())->text(sprintf(__('Do not put blog media URL "%s" in fields or it will be removed.'), App::media()->root_url))->class('form-note'),
+            (new Note())->text(sprintf(__('Do not put blog media URL "%s" in fields or it will be removed.'), App::media()->getRootUrl()))->class('form-note'),
             // destination
             (new Para())->items([
                 (new Label(__('Destination:')))->for('filesalias_destination')->class('required'),
@@ -223,7 +223,7 @@ class Manage
                     '<table><thead>' .
                     '<caption>' . __('Aliases list') . '</caption>' .
                     '<tr>' .
-                    '<th class="nowrap" scope="col">' . __('Destination') . ' - <ins>' . Html::escapeHTML(App::media()->root_url) . '</ins><code>(-?-)</code></th>' .
+                    '<th class="nowrap" scope="col">' . __('Destination') . ' - <ins>' . Html::escapeHTML(App::media()->getRootUrl()) . '</ins><code>(-?-)</code></th>' .
                     '<th class="nowrap" scope="col">' . __('Alias') . ' - <ins>' . App::blog()->url() . App::url()->getBase('filesalias') . '/' . '</ins><code>(-?-)</code></th>' .
                     '<th class="nowrap" scope="col">' . __('Password') . '</th>' .
                     '<th class="nowrap" scope="col">' . __('Disposable') . '</th>' .
