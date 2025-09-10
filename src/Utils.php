@@ -30,7 +30,7 @@ class Utils
     public static function getAliases(): MetaRecord
     {
         $sql = new SelectStatement();
-        $rs  = $sql->from(App::con()->prefix() . My::ALIAS_TABLE_NAME)
+        $rs  = $sql->from(App::db()->con()->prefix() . My::ALIAS_TABLE_NAME)
             ->columns([
                 'filesalias_url',
                 'filesalias_destination',
@@ -52,7 +52,7 @@ class Utils
     public static function getAlias(string $url): MetaRecord
     {
         $sql = new SelectStatement();
-        $rs  = $sql->from(App::con()->prefix() . My::ALIAS_TABLE_NAME)
+        $rs  = $sql->from(App::db()->con()->prefix() . My::ALIAS_TABLE_NAME)
             ->columns([
                 'filesalias_url',
                 'filesalias_destination',
@@ -85,7 +85,7 @@ class Utils
      */
     public static function updateAliases(array $aliases): void
     {
-        App::con()->begin();
+        App::db()->con()->begin();
 
         try {
             self::deleteAliases();
@@ -96,9 +96,9 @@ class Utils
                 }
             }
 
-            App::con()->commit();
+            App::db()->con()->commit();
         } catch (Exception $e) {
-            App::con()->rollback();
+            App::db()->con()->rollback();
 
             throw $e;
         }
@@ -122,7 +122,7 @@ class Utils
             throw new Exception(__('File destination is empty.'));
         }
 
-        $cur = App::con()->openCursor(App::con()->prefix() . My::ALIAS_TABLE_NAME);
+        $cur = App::db()->con()->openCursor(App::db()->con()->prefix() . My::ALIAS_TABLE_NAME);
         $cur->setField('blog_id', App::blog()->id());
         $cur->setField('filesalias_url', (string) $url);
         $cur->setField('filesalias_destination', (string) $destination);
@@ -137,7 +137,7 @@ class Utils
     public static function deleteAliases(): void
     {
         $sql = new DeleteStatement();
-        $sql->from(App::con()->prefix() . My::ALIAS_TABLE_NAME)
+        $sql->from(App::db()->con()->prefix() . My::ALIAS_TABLE_NAME)
             ->where('blog_id = ' . $sql->quote(App::blog()->id()))
             ->delete();
     }
@@ -150,7 +150,7 @@ class Utils
     public static function deleteAlias(string $url): void
     {
         $sql = new DeleteStatement();
-        $sql->from(App::con()->prefix() . My::ALIAS_TABLE_NAME)
+        $sql->from(App::db()->con()->prefix() . My::ALIAS_TABLE_NAME)
             ->where('blog_id = ' . $sql->quote(App::blog()->id()))
             ->and('filesalias_url = ' . $sql->quote($url))
             ->delete();
@@ -171,7 +171,7 @@ class Utils
         $path = App::blog()->settings()->get('system')->get('public_path');
 
         $sql = new SelectStatement();
-        $rs  = $sql->from(App::con()->prefix() . App::postMedia()::MEDIA_TABLE_NAME)
+        $rs  = $sql->from(App::db()->con()->prefix() . App::postMedia()::MEDIA_TABLE_NAME)
             ->column('media_id')
             ->where('media_path = ' . $sql->quote(is_string($path) ? $path : ''))
             ->and('media_file = ' . $sql->quote($target))

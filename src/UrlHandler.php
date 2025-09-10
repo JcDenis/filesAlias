@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Dotclear\Plugin\filesAlias;
 
 use Dotclear\App;
-use Dotclear\Core\Url;
 
 /**
  * @brief       filesAlias frontend URL handler class.
@@ -15,7 +14,7 @@ use Dotclear\Core\Url;
  * @author      Jean-Christian Denis (latest)
  * @copyright   GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
  */
-class UrlHandler extends Url
+class UrlHandler
 {
     /**
      * File alias page.
@@ -29,7 +28,7 @@ class UrlHandler extends Url
         App::frontend()->context()->__set('filealias', $alias);
 
         if ($alias->isEmpty()) {
-            self::p404();
+            App::url()::p404();
         }
 
         $disposable  = !empty($alias->f('filesalias_disposable'));
@@ -41,7 +40,7 @@ class UrlHandler extends Url
             if (!empty($_POST['filepassword']) && $_POST['filepassword'] == $password) {
                 self::servefile($destination, $args, $disposable);
             } else {
-                self::serveDocument('file-password-form.html', 'text/html', false);
+                App::url()::serveDocument('file-password-form.html', 'text/html', false);
 
                 return;
             }
@@ -62,13 +61,13 @@ class UrlHandler extends Url
         $media = Utils::getMediaId($target);
 
         if (empty($media)) {
-            self::p404();
+            App::url()::p404();
         }
 
         $file = App::media()->getFile($media);
 
         if (empty($file->file)) {
-            self::p404();
+            App::url()::p404();
         }
 
         header('Content-type: ' . $file->type);

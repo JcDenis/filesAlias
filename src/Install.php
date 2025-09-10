@@ -6,7 +6,6 @@ namespace Dotclear\Plugin\filesAlias;
 
 use Dotclear\App;
 use Dotclear\Helper\Process\TraitProcess;
-use Dotclear\Database\Structure;
 use Exception;
 
 /**
@@ -33,9 +32,9 @@ class Install
         }
 
         try {
-            $s = new Structure(App::con(), App::con()->prefix());
+            $s = App::db()->structure();
 
-            $s->__get(My::ALIAS_TABLE_NAME)
+            $s->table(My::ALIAS_TABLE_NAME)
                 ->field('blog_id', 'varchar', 32, false)
                 ->field('filesalias_url', 'varchar', 255, false)
                 ->field('filesalias_destination', 'varchar', 255, false)
@@ -47,7 +46,7 @@ class Install
                 ->reference('fk_filesalias_blog', 'blog_id', 'blog', 'blog_id', 'cascade', 'cascade')
             ;
 
-            (new Structure(App::con(), App::con()->prefix()))->synchronize($s);
+            App::db()->structure()->synchronize($s);
 
             return true;
         } catch (Exception $e) {
