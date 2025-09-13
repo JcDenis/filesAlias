@@ -47,8 +47,14 @@ class Manage
 
         // Update aliases
         if (isset($_POST['a']) && is_array($_POST['a'])) {
+            $rows = [];
+            foreach ($_POST['a'] as $row) {
+                if (is_array($row)) {
+                    $rows[] = AliasRow::newFromArray($row, 'filesalias_');
+                }
+            }
             try {
-                Utils::updateAliases($_POST['a']);
+                Utils::updateAliases($rows);
                 Notices::addSuccessNotice(__('Aliases successfully updated.'));
                 My::redirect();
             } catch (Exception $e) {
@@ -70,7 +76,7 @@ class Manage
 
                 if (!empty($found)) {
                     try {
-                        Utils::createAlias($url, $target, $totrash, $password);
+                        Utils::createAlias(new AliasRow($url, $target, $totrash, $password));
                         Notices::addSuccessNotice(__('Alias for this media created.'));
                         My::redirect();
                     } catch (Exception $e) {
@@ -84,7 +90,7 @@ class Manage
 
                 if (!empty($found)) {
                     try {
-                        Utils::createAlias($url, $target, $totrash, $password);
+                        Utils::createAlias(new AliasRow($url, $target, $totrash, $password));
                         Notices::addSuccessNotice(__('Alias for this media modified.'));
                         My::redirect();
                     } catch (Exception $e) {
@@ -188,24 +194,21 @@ class Manage
             $lines = '';
             $i     = 0;
             while ($aliases->fetch()) {
-                $url         = is_string($aliases->f('filesalias_url')) ? $aliases->f('filesalias_url') : '';
-                $destination = is_string($aliases->f('filesalias_destination')) ? $aliases->f('filesalias_destination') : '';
-                $password    = is_string($aliases->f('filesalias_password')) ? $aliases->f('filesalias_password') : '';
-                $disposable  = !empty($aliases->f('filesalias_disposable'));
-                $full        = App::blog()->url() . App::url()->getBase('filesalias') . '/' . Html::escapeHTML($url);
+                $row  = AliasRow::newFromRecord($aliases);
+                $full = App::blog()->url() . App::url()->getBase('filesalias') . '/' . Html::escapeHTML($row->url);
 
                 $lines .= '<tr class="line" id="l_' . $i . '">' .
                 '<td>' .
-                (new Input(['a[' . $i . '][filesalias_destination]']))->size(50)->maxlength(255)->value(Html::escapeHTML($destination))->render() .
+                (new Input(['a[' . $i . '][filesalias_destination]']))->size(50)->maxlength(255)->value(Html::escapeHTML($row->destination))->render() .
                 '</td>' .
                 '<td>' .
-                (new Input(['a[' . $i . '][filesalias_url]']))->size(50)->maxlength(255)->value(Html::escapeHTML($url))->render() .
+                (new Input(['a[' . $i . '][filesalias_url]']))->size(50)->maxlength(255)->value(Html::escapeHTML($row->url))->render() .
                 '<a href="' . $full . '">' . __('link') . '</a></td>' .
                 '<td>' .
-                (new Input(['a[' . $i . '][filesalias_password]']))->size(50)->maxlength(255)->value(Html::escapeHTML($password))->render() .
+                (new Input(['a[' . $i . '][filesalias_password]']))->size(50)->maxlength(255)->value(Html::escapeHTML($row->password))->render() .
                 '</td>' .
                 '<td class="maximal">' .
-                (new Checkbox(['a[' . $i . '][filesalias_disposable]'], $disposable))->value(1)->render() .
+                (new Checkbox(['a[' . $i . '][filesalias_disposable]'], $row->disposable))->value(1)->render() .
                 '</td>' .
                 '</tr>';
                 $i++;

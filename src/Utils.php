@@ -6,10 +6,8 @@ namespace Dotclear\Plugin\filesAlias;
 
 use Dotclear\App;
 use Dotclear\Database\MetaRecord;
-use Dotclear\Database\Statement\{
-    DeleteStatement,
-    SelectStatement
-};
+use Dotclear\Database\Statement\DeleteStatement;
+use Dotclear\Database\Statement\SelectStatement;
 use Exception;
 
 /**
@@ -81,7 +79,7 @@ class Utils
      *      filesalias_password => string
      * ]
      *
-     * @param   array{filesalias_url:string,filesalias_destination:string,filesalias_disposable:bool,filesalias_password:string}    $aliases    The new aliases
+     * @param   AliasRow[]    $aliases    The new aliases
      */
     public static function updateAliases(array $aliases): void
     {
@@ -89,10 +87,9 @@ class Utils
 
         try {
             self::deleteAliases();
-            foreach ($aliases as $k => $v) {
-                if (!empty($v['filesalias_url']) && !empty($v['filesalias_destination'])) {
-                    $v['filesalias_disposable'] = !empty($v['filesalias_disposable']);
-                    self::createAlias($v['filesalias_url'], $v['filesalias_destination'], $v['filesalias_disposable'], $v['filesalias_password']);
+            foreach ($aliases as $row) {
+                if (is_a($row, AliasRow::class)) { // @phpstan-ignore-line
+                    self::createAlias($row);
                 }
             }
 
@@ -107,27 +104,24 @@ class Utils
     /**
      * Create an alias.
      *
-     * @param   string          $url            The URL
-     * @param   string          $destination    The destination
-     * @param   bool            $disposable     Is disposable
-     * @param   null|string     $password       The optionnal password
+     * @param   AliasRow    $alias  The alias representation 
      */
-    public static function createAlias(string $url, string $destination, bool $disposable = false, ?string $password = null): void
+    public static function createAlias(AliasRow $alias): void
     {
-        if (empty($url)) {
+        if ($alias->url === '') {
             throw new Exception(__('File URL is empty.'));
         }
 
-        if (empty($destination)) {
+        if ($alias->destination === '') {
             throw new Exception(__('File destination is empty.'));
         }
 
         $cur = App::db()->con()->openCursor(App::db()->con()->prefix() . My::ALIAS_TABLE_NAME);
         $cur->setField('blog_id', App::blog()->id());
-        $cur->setField('filesalias_url', (string) $url);
-        $cur->setField('filesalias_destination', (string) $destination);
-        $cur->setField('filesalias_password', $password);
-        $cur->setField('filesalias_disposable', (int) $disposable);
+        $cur->setField('filesalias_url', $alias->url);
+        $cur->setField('filesalias_destination', $alias->destination);
+        $cur->setField('filesalias_password', $alias->password);
+        $cur->setField('filesalias_disposable', (int) $alias->disposable);
         $cur->insert();
     }
 
