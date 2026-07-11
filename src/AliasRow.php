@@ -40,10 +40,10 @@ class AliasRow
     public static function newFromRecord(MetaRecord $rs): self
     {
         return new self(
-            url: is_string($rs->f('filesalias_url')) ? $rs->f('filesalias_url') : '',
-            destination: is_string($rs->f('filesalias_destination')) ? $rs->f('filesalias_destination') : '',
-            disposable: !empty($rs->f('filesalias_disposable')),
-            password: is_string($rs->f('filesalias_password')) ? $rs->f('filesalias_password') : ''
+            url: $rs->strField('filesalias_url'),
+            destination: $rs->strField('filesalias_destination'),
+            disposable: $rs->boolField('filesalias_disposable'),
+            password: $rs->strField('filesalias_password')
         );
     }
 }

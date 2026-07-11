@@ -171,6 +171,6 @@ class Utils
             ->and('media_file = ' . $sql->quote($target))
             ->select();
 
-        return !is_null($rs) && $rs->count() ? (int) $rs->f('media_id') : 0;
+        return !is_null($rs) && $rs->count() ? $rs->intField('media_id') : 0;
     }
 }

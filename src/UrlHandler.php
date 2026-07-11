@@ -31,9 +31,9 @@ class UrlHandler
             App::url()::p404();
         }
 
-        $disposable  = !empty($alias->f('filesalias_disposable'));
-        $password    = is_string($alias->f('filesalias_password')) ? $alias->f('filesalias_password') : '';
-        $destination = is_string($alias->f('filesalias_destination')) ? $alias->f('filesalias_destination') : '';
+        $disposable  = $alias->boolField('filesalias_disposable');
+        $password    = $alias->strField('filesalias_password');
+        $destination = $alias->strField('filesalias_destination');
 
         if ($password) {
             # Check for match
