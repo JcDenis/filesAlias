@@ -8,4 +8,4 @@
  * @author      Jean-Christian Denis (latest)
  * @copyright   GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
  */
-dcCore::app()->resources['help']['filesAlias'] = __DIR__ . '/help/filesAlias.html';
+\Dotclear\App::backend()->resources()->set('help', 'filesAlias', __DIR__ . '/help/filesAlias.html');
