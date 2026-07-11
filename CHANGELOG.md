@@ -1,3 +1,8 @@
+
+filesAlias 1.5 - xxxx.xx.xx
+===========================================================
+* Bump Dotclear from 2.36 to 2.39
+
 filesAlias 1.4 - 2025.09.13
 ===========================================================
 * Use object as Alias representation
