@@ -50,7 +50,7 @@ class Manage
             $rows = [];
             foreach ($_POST['a'] as $row) {
                 if (is_array($row)) {
-                    $rows[] = AliasRow::newFromArray($row, 'filesalias_');
+                    $rows[] = AliasRow::newFromArray(array_filter($row, is_string(...), ARRAY_FILTER_USE_KEY), 'filesalias_');
                 }
             }
             try {
@@ -64,11 +64,11 @@ class Manage
 
         // New alias
         if (isset($_POST['filesalias_url'])) {
-            $url = empty($_POST['filesalias_url']) ? PallazzoTools::rand_uniqid() : $_POST['filesalias_url'];
+            $url = empty($_POST['filesalias_url']) || !is_string($_POST['filesalias_url']) ? PallazzoTools::rand_uniqid() : $_POST['filesalias_url'];
 
-            $target   = (string) $_POST['filesalias_destination'];
+            $target   = is_string($_POST['filesalias_destination']) ? $_POST['filesalias_destination'] : '';
             $totrash  = isset($_POST['filesalias_disposable']) ? true : false;
-            $password = empty($_POST['filesalias_password']) ? '' : $_POST['filesalias_password'];
+            $password = empty($_POST['filesalias_password']) || !is_string($_POST['filesalias_password']) ? '' : $_POST['filesalias_password'];
 
             if (preg_match('/^' . preg_quote(App::media()->getRootUrl(), '/') . '/', $target)) {
                 $target = (string) preg_replace('/^' . preg_quote(App::media()->getRootUrl(), '/') . '/', '', $target);

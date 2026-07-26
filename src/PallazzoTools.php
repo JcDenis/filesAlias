@@ -22,6 +22,7 @@ class PallazzoTools
         $in      = time();
         $passKey = md5(uniqid((string) rand(), true));
 
+        $i = [];
         for ($n = 0; $n < strlen($index); $n++) {
             $i[] = substr($index, $n, 1);
         }
@@ -31,6 +32,7 @@ class PallazzoTools
             ? hash('sha512', $passKey)
             : $passhash;
 
+        $p = [];
         for ($n = 0; $n < strlen($index); $n++) {
             $p[] = substr($passhash, $n, 1);
         }

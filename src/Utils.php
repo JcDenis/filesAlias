@@ -162,12 +162,12 @@ class Utils
         if (!App::blog()->isDefined()) {
             return 0;
         }
-        $path = App::blog()->settings()->get('system')->get('public_path');
+        $path = App::blog()->settings()->get('system')->getStr('public_path', false);
 
         $sql = new SelectStatement();
         $rs  = $sql->from(App::db()->con()->prefix() . App::postMedia()::MEDIA_TABLE_NAME)
             ->column('media_id')
-            ->where('media_path = ' . $sql->quote(is_string($path) ? $path : ''))
+            ->where('media_path = ' . $sql->quote($path))
             ->and('media_file = ' . $sql->quote($target))
             ->select();
 

@@ -1,7 +1,8 @@
 
-filesAlias 1.5 - xxxx.xx.xx
+filesAlias 1.x - xxxx.xx.xx
 ===========================================================
 * Bump Dotclear from 2.36 to 2.39
+* Code review (phpstan max)
 
 filesAlias 1.4 - 2025.09.13
 ===========================================================
