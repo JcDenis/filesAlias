@@ -16,40 +16,18 @@ namespace Dotclear\Plugin\filesAlias;
  */
 class PallazzoTools
 {
+    /**
+     * Get a random alias.
+     *
+     * Uses a cryptographically secure generator, as alias may be the only protection of a file.
+     */
     public static function rand_uniqid(): string
     {
-        $index   = 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $in      = time();
-        $passKey = md5(uniqid((string) rand(), true));
-
-        $i = [];
-        for ($n = 0; $n < strlen($index); $n++) {
-            $i[] = substr($index, $n, 1);
+        $index = 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $out   = '';
+        for ($n = 0; $n < 12; $n++) {
+            $out .= $index[random_int(0, strlen($index) - 1)];
         }
-
-        $passhash = hash('sha256', $passKey);
-        $passhash = (strlen($passhash) < strlen($index))
-            ? hash('sha512', $passKey)
-            : $passhash;
-
-        $p = [];
-        for ($n = 0; $n < strlen($index); $n++) {
-            $p[] = substr($passhash, $n, 1);
-        }
-
-        array_multisort($p, SORT_DESC, $i);
-        $index = implode($i);
-
-        $base = strlen($index);
-
-        $out = '';
-        for ($t = floor(log($in, $base)); $t >= 0; $t--) {
-            $bcp = pow($base, $t);
-            $a   = floor($in / $bcp) % $base;
-            $out = $out . substr($index, $a, 1);
-            $in  = $in - ($a * $bcp);
-        }
-        $out = strrev($out);
 
         return $out;
     }
