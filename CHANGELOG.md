@@ -1,3 +1,7 @@
+filesAlias 1.6 - 2026.11.11
+===========================================================
+* Use a cryptographically secure generator for random alias
+* Bump Dotclear from 2.39 to 2.40
 
 filesAlias 1.5 - 2026.08.12
 ===========================================================
