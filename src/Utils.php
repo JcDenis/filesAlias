@@ -117,11 +117,11 @@ class Utils
         }
 
         $cur = App::db()->con()->openCursor(App::db()->con()->prefix() . My::ALIAS_TABLE_NAME);
-        $cur->setField('blog_id', App::blog()->id());
-        $cur->setField('filesalias_url', $alias->url);
-        $cur->setField('filesalias_destination', $alias->destination);
-        $cur->setField('filesalias_password', $alias->password);
-        $cur->setField('filesalias_disposable', (int) $alias->disposable);
+        $cur->setStrField('blog_id', App::blog()->id());
+        $cur->setStrField('filesalias_url', $alias->url);
+        $cur->setStrField('filesalias_destination', $alias->destination);
+        $cur->setStrField('filesalias_password', $alias->password);
+        $cur->setIntField('filesalias_disposable', (int) $alias->disposable);
         $cur->insert();
     }
 
