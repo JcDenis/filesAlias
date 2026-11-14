@@ -88,7 +88,8 @@ class Utils
         try {
             self::deleteAliases();
             foreach ($aliases as $row) {
-                if (is_a($row, AliasRow::class)) { // @phpstan-ignore-line
+                // An empty alias or destination removes the alias
+                if (is_a($row, AliasRow::class) && $row->url !== '' && $row->destination !== '') { // @phpstan-ignore-line
                     self::createAlias($row);
                 }
             }
