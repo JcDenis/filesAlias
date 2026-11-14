@@ -12,6 +12,8 @@ _filesAlias_ is a plugin for the open-source web publishing software called [Dot
 
 > Create public aliases of your blog's media. Alias can be passworded and/or disposable.
 
+A [user guide in French](https://github.com/JcDenis/filesAlias/blob/master/docs/fr/utilisation.md) is available.
+
 ## REQUIREMENTS
 
 * Dotclear 2.40
@@ -23,11 +25,12 @@ _filesAlias_ is a plugin for the open-source web publishing software called [Dot
 First install _filesAlias_, manualy from a zip package or from 
 Dotclear plugins repository. (See Dotclear's documentation to know how do this)
 
-You can manage your aliases from menu ''Media sharing'' on admin dashboard sidebar.
+You can manage your aliases from menu ''Files alias'' (Plugins) on admin sidebar.
 You can change public URL handler (default is _pub/_) by using plugin myUrlhandlers.
 
 ## LINKS
 
+* [User guide (in French)](https://github.com/JcDenis/filesAlias/blob/master/docs/fr/utilisation.md)
 * [License](https://github.com/JcDenis/filesAlias/blob/master/LICENSE)
 * [Packages & details](https://github.com/JcDenis/filesAlias/releases) (or on [Repository](https://dotclear.org/plugin/detail/filesAlias))
 * [Sources & contributions](https://github.com/JcDenis/filesAlias)
