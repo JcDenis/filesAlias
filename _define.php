@@ -22,7 +22,7 @@ $this->registerModule(
     'Files alias',
     "Manage aliases of your blog's media",
     'Osku and contributors',
-    '1.6',
+    '1.7',
     [
         'requires'    => [['core', '2.40']],
         'permissions' => 'My',
@@ -30,6 +30,6 @@ $this->registerModule(
         'support'     => 'https://github.com/JcDenis/' . $this->id . '/issues',
         'details'     => 'https://github.com/JcDenis/' . $this->id . '/',
         'repository'  => 'https://raw.githubusercontent.com/JcDenis/' . $this->id . '/master/dcstore.xml',
-        'date'        => '2026-11-11T09:14:32+00:00',
+        'date'        => '2026-11-14T21:12:55+00:00',
     ]
 );

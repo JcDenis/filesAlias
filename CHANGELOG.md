@@ -1,3 +1,12 @@
+filesAlias 1.7 - 2026.11.14
+===========================================================
+* [fix] Empty alias or destination in the list did not remove the alias
+* [fix] Admin page: table markup, password not required, creation message
+* [security] Timing safe comparison of alias password
+* [lang] Translate plugin name
+* [docs] Add a user guide in French, with screenshots
+* [docs] Rewrite the admin help in English and French, one block per page
+
 filesAlias 1.6 - 2026.11.11
 ===========================================================
 * Use a cryptographically secure generator for random alias
