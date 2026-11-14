@@ -91,7 +91,7 @@ class Manage
                 if (!empty($found)) {
                     try {
                         Utils::createAlias(new AliasRow($url, $target, $totrash, $password));
-                        Notices::addSuccessNotice(__('Alias for this media modified.'));
+                        Notices::addSuccessNotice(__('Alias for this media created.'));
                         My::redirect();
                     } catch (Exception $e) {
                         App::error()->add($e->getMessage());
@@ -154,7 +154,7 @@ class Manage
             (new Note())->text(__('Leave empty to get a randomize alias.'))->class('form-note'),
             // password
             (new Para())->items([
-                (new Label(__('Password:')))->for('filesalias_password')->class('required'),
+                (new Label(__('Password:')))->for('filesalias_password'),
                 (new Input('filesalias_password'))->size(70)->maxlength(255),
             ]),
             // disposable
@@ -226,9 +226,9 @@ class Manage
                     '<th class="nowrap" scope="col">' . __('Alias') . ' - <ins>' . App::blog()->url() . App::url()->getBase('filesalias') . '/' . '</ins><code>(-?-)</code></th>' .
                     '<th class="nowrap" scope="col">' . __('Password') . '</th>' .
                     '<th class="nowrap" scope="col">' . __('Disposable') . '</th>' .
-                    '</tr></thead><body>' .
+                    '</tr></thead><tbody>' .
                     $lines .
-                    '</tobdy></table></div>'
+                    '</tbody></table></div>'
                 )),
                 (new Para())->items([
                     (new Submit(['save']))->value(__('Update')),
