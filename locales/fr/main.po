@@ -10,6 +10,9 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+msgid "Files alias"
+msgstr "Alias de fichiers"
+
 msgid "Media sharing"
 msgstr "Partage de media"
 
@@ -27,9 +30,6 @@ msgstr "L'alias pour votre fichier a été créé."
 
 msgid "Target is not in media manager."
 msgstr "La cible n'est pas dans le gestionnaire de media."
-
-msgid "Alias for this media modified."
-msgstr "L'alias du media modifié."
 
 msgid "New alias"
 msgstr "Nouvel alias"
