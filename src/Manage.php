@@ -119,7 +119,7 @@ class Manage
             self::displayAliasList();
         }
 
-        Page::helpBlock('filesAlias');
+        Page::helpBlock(My::id() . (($_REQUEST['part'] ?? '') == 'new' ? '-new' : '-list'));
 
         Page::closeModule();
     }
