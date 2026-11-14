@@ -37,7 +37,7 @@ class UrlHandler
 
         if ($password) {
             # Check for match
-            if (!empty($_POST['filepassword']) && $_POST['filepassword'] == $password) {
+            if (!empty($_POST['filepassword']) && is_string($_POST['filepassword']) && hash_equals($password, $_POST['filepassword'])) {
                 self::servefile($destination, $args, $disposable);
             } else {
                 App::url()::serveDocument('file-password-form.html', 'text/html', false);
