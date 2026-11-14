@@ -7,7 +7,7 @@
     <desc>Manage aliases of your blog's media</desc>
     <file>https://github.com/JcDenis/filesAlias/releases/download/v1.6/plugin-filesAlias.zip</file>
     <da:dcmin>2.40</da:dcmin>
-    <da:details>https://github.com/JcDenis/filesAlias/src/branch/master/README.md</da:details>
+    <da:details>https://github.com/JcDenis/filesAlias/blob/master/README.md</da:details>
     <da:support>https://github.com/JcDenis/filesAlias/issues</da:support>
   </module>
 </modules>
